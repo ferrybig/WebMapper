@@ -10,9 +10,8 @@
 	<properties>
 		<jdk.version>1.8</jdk.version>
 		<junit.version>4.11</junit.version>
-		<netty.version>5.0.0.Alpha1</netty.version>
 		<json.version>20140107</json.version>
-		<main.class>fn.tmg.backend.Main</main.class>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
 		<maven.compiler.source>${jdk.version}</maven.compiler.source>
 		<maven.compiler.target>${jdk.version}</maven.compiler.target>
@@ -94,6 +93,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.3</version>
 				<executions>
+					<execution>
 						<goals>
 							<goal>jar</goal>
 						</goals>
@@ -122,16 +122,20 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
-			<version>${netty.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>${json.version}</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>4.1.0.Beta5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ini4j</groupId>
+			<artifactId>ini4j</artifactId>
+			<version>0.5.4</version>
 		</dependency>
 	</dependencies>
 </project>
