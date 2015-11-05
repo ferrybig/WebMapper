@@ -7,7 +7,7 @@ package me.ferrybig.javacoding.webmapper.netty;
 
 import me.ferrybig.javacoding.webmapper.Listener;
 import me.ferrybig.javacoding.webmapper.Main;
-import me.ferrybig.javacoding.webmapper.RequestMapper;
+import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;

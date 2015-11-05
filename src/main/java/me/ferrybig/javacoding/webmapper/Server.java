@@ -5,6 +5,7 @@
  */
 package me.ferrybig.javacoding.webmapper;
 
+import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
 import me.ferrybig.javacoding.webmapper.netty.WebSocketServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;

@@ -1,7 +1,7 @@
 package me.ferrybig.javacoding.webmapper.netty;
 
 import me.ferrybig.javacoding.webmapper.Listener;
-import me.ferrybig.javacoding.webmapper.RequestMapper;
+import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
