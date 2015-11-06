@@ -77,7 +77,7 @@ public class Server {
 			this.listeners.put(listener, ch);
 			return listener;
 		} catch (CertificateException | InterruptedException | SSLException ex) {
-			throw (ListenerException) new ListenerException(ex.toString()).initCause(ex);
+			throw new ListenerException(ex);
 		}
 	}
 
