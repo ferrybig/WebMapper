@@ -35,8 +35,12 @@ public class DefaultRequestMapperTest {
 				fail();
 				return null;
 			}
+
+			{
+				this.setAllowUserData(DefaultRequestWrapper.DataType.REQUIRED);
+			}
 		};
-		wrap.setAllowUserData(DefaultRequestWrapper.DataType.REQUIRED);
+		
 		assertEquals(wrap.handleHttpRequest(null, null, null, Optional.empty()).getResult(), Result.SYNTAX_ERROR);
 	}
 
@@ -48,8 +52,12 @@ public class DefaultRequestMapperTest {
 			public EndpointResult handle(ChannelHandlerContext ctx, String endpoint, Session session, Optional userData) {
 				return RESULT;
 			}
+
+			{
+				this.setAllowUserData(DefaultRequestWrapper.DataType.REQUIRED);
+			}
 		};
-		wrap.setAllowUserData(DefaultRequestWrapper.DataType.REQUIRED);
+		
 		assertEquals(wrap.handleHttpRequest(null, null, null, Optional.of(new Object())).getResult(), Result.OK);
 	}
 
@@ -61,8 +69,12 @@ public class DefaultRequestMapperTest {
 			public EndpointResult handle(ChannelHandlerContext ctx, String endpoint, Session session, Optional userData) {
 				return RESULT;
 			}
+
+			{
+				this.setAllowUserData(DefaultRequestWrapper.DataType.REQUIRED);
+			}
 		};
-		wrap.setAllowUserData(DefaultRequestWrapper.DataType.REQUIRED);
+		
 		assertEquals(wrap.handleHttpRequest(null, null, null, Optional.of(new JSONObject())).getResult(), Result.OK);
 	}
 
@@ -74,8 +86,12 @@ public class DefaultRequestMapperTest {
 			public EndpointResult handle(ChannelHandlerContext ctx, String endpoint, Session session, Optional userData) {
 				return RESULT;
 			}
+
+			{
+				this.setAllowUserData(DefaultRequestWrapper.DataType.REQUIRED);
+			}
 		};
-		wrap.setAllowUserData(DefaultRequestWrapper.DataType.REQUIRED);
+		
 		assertEquals(wrap.handleHttpRequest(null, null, null, Optional.of(new Object())).getResult(), Result.SYNTAX_ERROR);
 	}
 }

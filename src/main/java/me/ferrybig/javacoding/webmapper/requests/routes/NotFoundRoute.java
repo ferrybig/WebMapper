@@ -19,7 +19,7 @@ public class NotFoundRoute extends DefaultRequestWrapper<Object> {
 
 	public NotFoundRoute() {
 		super(Object.class);
-		this.allowUserData = DataType.OPTIONAL;
+		this.setAllowUserData(DataType.OPTIONAL);
 	}
 	
 	@Override

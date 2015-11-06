@@ -22,7 +22,7 @@ import java.util.Optional;
  */
 public abstract class DefaultRequestWrapper<T> implements RequestMapper{
 
-	protected DataType allowUserData = OPTIONAL;
+	private DataType allowUserData = OPTIONAL;
 	protected final Class<T> dataType;
 	
 	public DefaultRequestWrapper(Class<T> dataType) {
@@ -33,7 +33,7 @@ public abstract class DefaultRequestWrapper<T> implements RequestMapper{
 		return allowUserData;
 	}
 
-	public void setAllowUserData(DataType allowUserData) {
+	protected void setAllowUserData(DataType allowUserData) {
 		this.allowUserData = allowUserData;
 	}
 
