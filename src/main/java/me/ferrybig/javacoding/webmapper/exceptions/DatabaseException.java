@@ -27,4 +27,25 @@ public class DatabaseException extends ServerException {
 	public DatabaseException(String msg) {
 		super(msg);
 	}
+	
+	/**
+	 * Constructs an instance of <code>DatabaseException</code> with the specified
+	 * detail message and cause.
+	 *
+	 * @param message the detail message.
+	 * @param cause the cause
+	 */
+	public DatabaseException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	/**
+	 * Constructs an instance of <code>DatabaseException</code> with the specified
+	 * cause.
+	 *
+	 * @param cause the cause
+	 */
+	public DatabaseException(Throwable cause) {
+		super(cause);
+	}
 }

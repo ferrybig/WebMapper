@@ -27,4 +27,25 @@ public class ServerException extends Exception {
 	public ServerException(String msg) {
 		super(msg);
 	}
+
+	/**
+	 * Constructs an instance of <code>ServerException</code> with the specified
+	 * detail message and cause.
+	 *
+	 * @param message the detail message.
+	 * @param cause the cause
+	 */
+	public ServerException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	/**
+	 * Constructs an instance of <code>ServerException</code> with the specified
+	 * cause.
+	 *
+	 * @param cause the cause
+	 */
+	public ServerException(Throwable cause) {
+		super(cause);
+	}
 }

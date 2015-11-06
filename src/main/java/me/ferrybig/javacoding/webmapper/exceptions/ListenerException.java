@@ -27,4 +27,25 @@ public class ListenerException extends ServerException {
 	public ListenerException(String msg) {
 		super(msg);
 	}
+	
+	/**
+	 * Constructs an instance of <code>ListenerException</code> with the specified
+	 * detail message and cause.
+	 *
+	 * @param message the detail message.
+	 * @param cause the cause
+	 */
+	public ListenerException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	/**
+	 * Constructs an instance of <code>ListenerException</code> with the specified
+	 * cause.
+	 *
+	 * @param cause the cause
+	 */
+	public ListenerException(Throwable cause) {
+		super(cause);
+	}
 }

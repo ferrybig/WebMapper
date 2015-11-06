@@ -27,4 +27,25 @@ public class ConfigException extends ServerException {
 	public ConfigException(String msg) {
 		super(msg);
 	}
+	
+	/**
+	 * Constructs an instance of <code>v</code> with the specified
+	 * detail message and cause.
+	 *
+	 * @param message the detail message.
+	 * @param cause the cause
+	 */
+	public ConfigException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	/**
+	 * Constructs an instance of <code>ConfigException</code> with the specified
+	 * cause.
+	 *
+	 * @param cause the cause
+	 */
+	public ConfigException(Throwable cause) {
+		super(cause);
+	}
 }
