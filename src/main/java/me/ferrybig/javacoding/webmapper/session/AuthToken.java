@@ -13,19 +13,16 @@ import java.util.Set;
  *
  * @author Fernando
  */
-public interface Session {
-	public AuthToken getAuthToken();
+public interface AuthToken {
+	public Set<Permission> getPermissions();
 	
-	public String getKey();
+	public PermissionsLevel getPermissionsLevel();
 	
-	public void upgradeAuthToken(PermissionsLevel level, Optional<User> realUser, Optional<User> effectiveUser);
+	public default boolean hasPermission(Permission permission) {
+		return this.getPermissions().contains(permission);
+	}
 	
-	public Set<InetAddress> getSeenIpAddresses();
+	public Optional<User> getEffectiveUser();
 	
-	public void destroySession();
-	
-	public boolean isAnonymous();
-	
-	public SessionManager getCreator();
-
+	public Optional<User> getRealUser();
 }
