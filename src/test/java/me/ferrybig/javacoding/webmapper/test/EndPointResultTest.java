@@ -11,6 +11,7 @@ import me.ferrybig.javacoding.webmapper.EndpointResult.Result;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;
 /**
@@ -46,5 +47,23 @@ public class EndPointResultTest {
 				seen.add(get);
 			}
 		}
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void nullResultTest() {
+		new EndpointResult(null, "Hello", EndpointResult.ContentType.TEXT).toString();
+		Assert.fail();
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void nullDataTest() {
+		new EndpointResult(Result.OK, null, EndpointResult.ContentType.TEXT).toString();
+		Assert.fail();
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void nullContentTypeTest() {
+		new EndpointResult(Result.OK, "Hello", null).toString();
+		Assert.fail();
 	}
 }
