@@ -42,9 +42,11 @@ public class Server {
 	private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private final Map<Listener, Channel> listeners = new HashMap<>();
 	private final RequestMapper mapper;
+	private final Logger log;
 
-	public Server(RequestMapper mapper) {
+	public Server(RequestMapper mapper, Logger log) {
 		this.mapper = mapper;
+		this.log = log;
 	}
 
 	public Listener addListener(String host, int port, boolean ssl) throws ListenerException {
