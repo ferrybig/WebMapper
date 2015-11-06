@@ -6,7 +6,7 @@
 package me.ferrybig.javacoding.webmapper.requests.routes;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
-import me.ferrybig.javacoding.webmapper.Session;
+import me.ferrybig.javacoding.webmapper.session.Session;
 import me.ferrybig.javacoding.webmapper.requests.DefaultRequestWrapper;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.Optional;

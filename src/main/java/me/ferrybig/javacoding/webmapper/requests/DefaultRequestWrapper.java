@@ -6,7 +6,7 @@
 package me.ferrybig.javacoding.webmapper.requests;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
-import me.ferrybig.javacoding.webmapper.Session;
+import me.ferrybig.javacoding.webmapper.session.Session;
 import static me.ferrybig.javacoding.webmapper.requests.DefaultRequestWrapper.DataType.EMPTY;
 import static me.ferrybig.javacoding.webmapper.requests.DefaultRequestWrapper.DataType.OPTIONAL;
 import static me.ferrybig.javacoding.webmapper.requests.DefaultRequestWrapper.DataType.REQUIRED;

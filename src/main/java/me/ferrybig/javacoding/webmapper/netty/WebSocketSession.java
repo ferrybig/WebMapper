@@ -5,7 +5,7 @@
  */
 package me.ferrybig.javacoding.webmapper.netty;
 
-import me.ferrybig.javacoding.webmapper.Session;
+import me.ferrybig.javacoding.webmapper.session.Session;
 
 /**
  *

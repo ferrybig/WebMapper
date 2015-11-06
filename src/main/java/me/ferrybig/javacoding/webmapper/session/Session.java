@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.ferrybig.javacoding.webmapper;
+package me.ferrybig.javacoding.webmapper.session;
 
 import java.util.Optional;
 
@@ -17,6 +17,5 @@ public interface Session {
 	public String getKey();
 
 	public static interface AuthToken {
-
 	}
 }
