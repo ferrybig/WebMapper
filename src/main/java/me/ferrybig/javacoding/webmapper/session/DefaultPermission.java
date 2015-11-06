@@ -73,17 +73,17 @@ public class DefaultPermission implements Permission {
 	
 	@Override
 	public String getName() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		return name;
 	}
 
 	@Override
 	public Set<PermissionsLevel> getDefaultPermissions() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		return defaultPermissions;
 	}
 
 	@Override
 	public String getDescription() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		return description;
 	}
 	
 }
