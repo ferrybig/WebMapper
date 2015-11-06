@@ -32,6 +32,7 @@ public class SimpleRequestRouter implements RequestMapper {
 	}
 
 	public void addRoute(String endpoint, RequestMapper route, boolean useSubString) {
+		Objects.requireNonNull(route, "route == null");
 		if (useSubString) {
 			final RequestMapper route2 = Objects.requireNonNull(route, "route == null");
 			final int endpointLength = endpoint.length();
@@ -41,10 +42,11 @@ public class SimpleRequestRouter implements RequestMapper {
 	}
 
 	public Optional<RequestMapper> getRouteExact(String route) {
-		return Optional.ofNullable(this.routes.get(route));
+		return Optional.ofNullable(this.routes.get(Objects.requireNonNull(route, "route == null")));
 	}
 
 	public Optional<RequestMapper> getRoute(String route) {
+		Objects.requireNonNull(route, "route == null");
 		RequestMapper r = null;
 		int lastLength = 0;
 		for (Map.Entry<String, RequestMapper> localRoute : this.routes.entrySet()) {
@@ -61,7 +63,7 @@ public class SimpleRequestRouter implements RequestMapper {
 	}
 
 	public boolean removeRoute(String route) {
-		return this.routes.remove(route) != null;
+		return this.routes.remove(Objects.requireNonNull(route, "route == null")) != null;
 	}
 
 	private RequestMapper resolvRoute(String route) {

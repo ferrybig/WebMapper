@@ -114,4 +114,40 @@ public class SimpleRequestRouterTest {
 		mapper.removeRoute("/test");
 		assertEquals(mapper.handleHttpRequest(null, "/test", null, Optional.empty()), RESULT);
 	}
+	
+	@Test(expected = NullPointerException.class)
+	public void addRouteArgument1nullTest() {
+		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
+		mapper.addRoute(null, FAILING);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void addRouteArgument2nullTest() {
+		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
+		mapper.addRoute("", null);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void removeRouteArgument1nullTest() {
+		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
+		mapper.removeRoute(null);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void getRouteArgument1nullTest() {
+		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
+		mapper.getRoute(null);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void getRouteExactArgument1nullTest() {
+		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
+		mapper.getRouteExact(null);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void __INITArgument1nullTest() {
+		SimpleRequestRouter mapper = new SimpleRequestRouter(null);
+		mapper.toString();
+	}
 }
