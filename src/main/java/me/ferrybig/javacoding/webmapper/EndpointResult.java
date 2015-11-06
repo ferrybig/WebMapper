@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper;
 
 import java.nio.charset.Charset;
+import java.util.Objects;
 import org.json.JSONObject;
 
 /**
@@ -15,16 +16,15 @@ import org.json.JSONObject;
  */
 public class EndpointResult<T> {
 
+	public static final Charset UTF8 = Charset.forName("UTF-8");
 	private final Result result;
 	private final T data;
-	private final Charset charset;
 	private final ContentType<T> contentType;
 
-	public EndpointResult(Result result, T data, Charset charset, ContentType<T> contentType) {
-		this.result = result;
-		this.data = data;
-		this.charset = charset;
-		this.contentType = contentType;
+	public EndpointResult(Result result, T data, ContentType<T> contentType) {
+		this.result = Objects.requireNonNull(result);
+		this.data = Objects.requireNonNull(data);
+		this.contentType = Objects.requireNonNull(contentType);
 	}
 
 	public Result getResult() {
@@ -33,10 +33,6 @@ public class EndpointResult<T> {
 
 	public T getData() {
 		return data;
-	}
-
-	public Charset getCharset() {
-		return charset;
 	}
 
 	public ContentType<T> getContentType() {

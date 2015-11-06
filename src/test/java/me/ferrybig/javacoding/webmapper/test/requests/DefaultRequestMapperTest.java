@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 public class DefaultRequestMapperTest {
 
 	private static final EndpointResult RESULT
-			= new EndpointResult(EndpointResult.Result.OK, "", Charset.defaultCharset(), EndpointResult.ContentType.TEXT);
+			= new EndpointResult(EndpointResult.Result.OK, "", EndpointResult.ContentType.TEXT);
 
 	@Test
 	public void requiredUserDataMissingTest() {

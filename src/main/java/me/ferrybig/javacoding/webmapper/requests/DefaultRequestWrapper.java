@@ -44,13 +44,13 @@ public abstract class DefaultRequestWrapper<T> implements RequestMapper{
 	@Override
 	public EndpointResult handleHttpRequest(ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData) {
 		if(allowUserData == EMPTY && userData.isPresent()) {
-			return new EndpointResult(EndpointResult.Result.SYNTAX_ERROR, "Bad Syntax, bogus userdata", Charset.defaultCharset(), EndpointResult.ContentType.TEXT);
+			return new EndpointResult(EndpointResult.Result.SYNTAX_ERROR, "Bad Syntax, bogus userdata", EndpointResult.ContentType.TEXT);
 		}
 		if(allowUserData == REQUIRED && !userData.isPresent()) {
-			return new EndpointResult(EndpointResult.Result.SYNTAX_ERROR, "Bad Syntax, missing userdata", Charset.defaultCharset(), EndpointResult.ContentType.TEXT);
+			return new EndpointResult(EndpointResult.Result.SYNTAX_ERROR, "Bad Syntax, missing userdata", EndpointResult.ContentType.TEXT);
 		}
 		if(userData.isPresent() && !dataType.isAssignableFrom(userData.get().getClass())) {
-			return new EndpointResult(EndpointResult.Result.SYNTAX_ERROR, "Bad Syntax, userdata wrong format", Charset.defaultCharset(), EndpointResult.ContentType.TEXT);
+			return new EndpointResult(EndpointResult.Result.SYNTAX_ERROR, "Bad Syntax, userdata wrong format", EndpointResult.ContentType.TEXT);
 		}
 		return handle(ctx, endpoint, session, userData.map(dataType::cast));
 	}
