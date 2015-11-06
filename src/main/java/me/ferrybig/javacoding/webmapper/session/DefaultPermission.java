@@ -19,31 +19,31 @@ import java.util.Set;
 public class DefaultPermission implements Permission {
 
 	private final String name;
-	private final Set<PermissionsLevel> defaultPermissions;
+	private final Set<PermissionLevel> permissionLevel;
 	private final String description;
 
-	public DefaultPermission(String name, String description, PermissionsLevel ... defaultPermissions) {
-		this(name, description, new HashSet<>(Arrays.asList(defaultPermissions)));
+	public DefaultPermission(String name, String description, PermissionLevel ... permissionsLevel) {
+		this(name, description, new HashSet<>(Arrays.asList(permissionsLevel)));
 	}
-	public DefaultPermission(String name, String description, Set<PermissionsLevel> defaultPermissions) {
+	public DefaultPermission(String name, String description, Set<PermissionLevel> permissionLevel) {
 		this.name = Objects.requireNonNull(name);
-		if(Objects.requireNonNull(defaultPermissions).stream().filter((l) -> l == null).count() != 0) {
+		if(Objects.requireNonNull(permissionLevel).stream().filter((l) -> l == null).count() != 0) {
 			throw new NullPointerException("Passed set contain a null element");
 		}
-		this.defaultPermissions = Collections.unmodifiableSet(defaultPermissions);
+		this.permissionLevel = Collections.unmodifiableSet(permissionLevel);
 		this.description = Objects.requireNonNull(description);
 	}
 
 	@Override
 	public String toString() {
-		return "DefaultPermission{" + "name=" + name + ", defaultPermissions=" + defaultPermissions + ", description=" + description + '}';
+		return "DefaultPermission{" + "name=" + name + ", permissionLevel=" + permissionLevel + ", description=" + description + '}';
 	}
 	
 	@Override
 	public int hashCode() {
 		int hash = 7;
 		hash = 71 * hash + Objects.hashCode(this.name);
-		hash = 71 * hash + Objects.hashCode(this.defaultPermissions);
+		hash = 71 * hash + Objects.hashCode(this.permissionLevel);
 		hash = 71 * hash + Objects.hashCode(this.description);
 		return hash;
 	}
@@ -60,7 +60,7 @@ public class DefaultPermission implements Permission {
 		if (!Objects.equals(this.name, other.name)) {
 			return false;
 		}
-		if (!Objects.equals(this.defaultPermissions, other.defaultPermissions)) {
+		if (!Objects.equals(this.permissionLevel, other.permissionLevel)) {
 			return false;
 		}
 		if (!Objects.equals(this.description, other.description)) {
@@ -77,8 +77,8 @@ public class DefaultPermission implements Permission {
 	}
 
 	@Override
-	public Set<PermissionsLevel> getDefaultPermissions() {
-		return defaultPermissions;
+	public Set<PermissionLevel> getPermissionLevel() {
+		return permissionLevel;
 	}
 
 	@Override

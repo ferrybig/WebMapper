@@ -15,7 +15,7 @@ import java.util.Set;
 public interface Permission {
 	public String getName();
 	
-	public Set<PermissionsLevel> getDefaultPermissions();
+	public Set<PermissionLevel> getPermissionLevel();
 	
 	public String getDescription();
 	

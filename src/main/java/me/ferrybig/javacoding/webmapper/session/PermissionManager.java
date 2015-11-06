@@ -12,7 +12,7 @@ import java.util.Set;
  * @author Fernando
  */
 public interface PermissionManager {
-	public Set<Permission> getPermissionsForLevel(PermissionsLevel level);
+	public Set<Permission> getPermissionsForLevel(PermissionLevel level);
 	
 	public void registerPermission(Permission permission);
 	

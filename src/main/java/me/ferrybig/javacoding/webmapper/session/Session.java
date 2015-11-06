@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper.session;
 
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ public interface Session {
 	
 	public String getKey();
 	
-	public void upgradeAuthToken(PermissionsLevel level, Optional<User> realUser, Optional<User> effectiveUser);
+	public void upgradeAuthToken(PermissionLevel level, Optional<User> realUser, Optional<User> effectiveUser);
 	
 	public Set<InetAddress> getSeenIpAddresses();
 	
@@ -27,5 +28,9 @@ public interface Session {
 	public boolean isAnonymous();
 	
 	public SessionManager getCreator();
+	
+	public Date getExpireDate();
+	
+	public void setExpireDate(Date date);
 
 }

@@ -9,6 +9,6 @@ package me.ferrybig.javacoding.webmapper.session;
  *
  * @author Fernando
  */
-public enum PermissionsLevel {
+public enum PermissionLevel {
 	EVERYONE, ANONYMOUS, NEW_USERS, REGISTERED_USER, CONTENT_EDITOR, ADMIN
 }

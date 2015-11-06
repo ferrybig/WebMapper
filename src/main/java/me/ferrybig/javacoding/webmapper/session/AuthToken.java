@@ -16,7 +16,7 @@ import java.util.Set;
 public interface AuthToken {
 	public Set<Permission> getPermissions();
 	
-	public PermissionsLevel getPermissionsLevel();
+	public PermissionLevel getPermissionsLevel();
 	
 	public default boolean hasPermission(Permission permission) {
 		return this.getPermissions().contains(permission);

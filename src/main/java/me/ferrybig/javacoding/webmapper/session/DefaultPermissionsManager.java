@@ -18,25 +18,25 @@ import java.util.Set;
  */
 public class DefaultPermissionsManager implements PermissionManager {
 
-	private final Map<PermissionsLevel,Set<Permission>> permissionsByLevel = new HashMap<>();
+	private final Map<PermissionLevel,Set<Permission>> permissionsByLevel = new HashMap<>();
 	
 	{
-		Arrays.stream(PermissionsLevel.values()).forEach(l->permissionsByLevel.put(l,new HashSet<>()));
+		Arrays.stream(PermissionLevel.values()).forEach(l->permissionsByLevel.put(l,new HashSet<>()));
 	}
 	
 	@Override
-	public Set<Permission> getPermissionsForLevel(PermissionsLevel level) {
+	public Set<Permission> getPermissionsForLevel(PermissionLevel level) {
 		return Collections.unmodifiableSet(permissionsByLevel.get(level));
 	}
 
 	@Override
 	public void registerPermission(Permission permission) {
-		permission.getDefaultPermissions().stream().forEach(l->permissionsByLevel.get(l).add(permission));
+		permission.getPermissionLevel().stream().forEach(l->permissionsByLevel.get(l).add(permission));
 	}
 
 	@Override
 	public void unregisterPermission(Permission permission) {
-		permission.getDefaultPermissions().stream().forEach(l->permissionsByLevel.get(l).remove(permission));
+		permission.getPermissionLevel().stream().forEach(l->permissionsByLevel.get(l).remove(permission));
 	}
 	
 }
