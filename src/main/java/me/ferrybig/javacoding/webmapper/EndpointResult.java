@@ -39,6 +39,41 @@ public class EndpointResult<T> {
 		return contentType;
 	}
 
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 59 * hash + Objects.hashCode(this.result);
+		hash = 59 * hash + Objects.hashCode(this.data);
+		hash = 59 * hash + Objects.hashCode(this.contentType);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final EndpointResult<?> other = (EndpointResult<?>) obj;
+		if (this.result != other.result) {
+			return false;
+		}
+		if (!Objects.equals(this.data, other.data)) {
+			return false;
+		}
+		if (!Objects.equals(this.contentType, other.contentType)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "EndpointResult{" + "result=" + result + ", data=" + data + ", contentType=" + contentType + '}';
+	}
+
 	public enum Result {
 		OK,
 		NO_PERMISSIONS,
@@ -59,6 +94,14 @@ public class EndpointResult<T> {
 
 		};
 		public static final ContentType<String> TEXT = new ContentType<String>() {
+
+			@Override
+			public byte[] toBytes(String t, Charset charset) {
+				return t.getBytes(charset);
+			}
+
+		};
+		public static final ContentType<String> HTML = new ContentType<String>() {
 
 			@Override
 			public byte[] toBytes(String t, Charset charset) {
