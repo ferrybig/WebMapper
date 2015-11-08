@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper.session;
 
 import java.net.InetAddress;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
@@ -23,14 +24,16 @@ public interface Session {
 	
 	public Set<InetAddress> getSeenIpAddresses();
 	
-	public void destroySession();
+	public default void destroySession() {
+		this.setExpireDate(Instant.MIN);
+	}
 	
 	public boolean isAnonymous();
 	
 	public SessionManager getCreator();
 	
-	public Date getExpireDate();
+	public Instant getExpireDate();
 	
-	public void setExpireDate(Date date);
+	public void setExpireDate(Instant date);
 
 }

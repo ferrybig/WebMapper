@@ -19,7 +19,13 @@ public interface SessionManager {
 	
 	public Collection<Session> getKnownSessions();
 	
+	public default Session findOrCreateSession(Optional<String> key) {
+		return key.flatMap(this::getSessionByKey).orElseGet(this::createNewSession);
+	}
+	
 	public default Session findOrCreateSession(String key) {
 		return this.getSessionByKey(key).orElseGet(this::createNewSession);
 	}
+
+	PermissionManager getPermissionsManager();
 }
