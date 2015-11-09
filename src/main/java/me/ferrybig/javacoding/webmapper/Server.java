@@ -8,6 +8,7 @@ package me.ferrybig.javacoding.webmapper;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
 import me.ferrybig.javacoding.webmapper.netty.WebSocketServerInitializer;
+import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -42,11 +43,13 @@ public class Server {
 	private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private final Map<Listener, Channel> listeners = new HashMap<>();
 	private final RequestMapper mapper;
-	private final Logger log;
+	private static final Logger log = Logger.getLogger(Server.class.getName());
+	private final SessionManager sessions;
 
-	public Server(RequestMapper mapper, Logger log) {
+	public Server(SessionManager sessions, RequestMapper mapper) {
+		this.sessions = sessions;
 		this.mapper = mapper;
-		this.log = log;
+		
 	}
 
 	public Listener addListener(String host, int port, boolean ssl) throws ListenerException {
@@ -55,6 +58,7 @@ public class Server {
 			if (this.listeners.containsKey(listener)) {
 				return listener;
 			}
+			
 			final SslContext sslCtx;
 			if (ssl) {
 				SelfSignedCertificate ssc = new SelfSignedCertificate();
@@ -66,14 +70,15 @@ public class Server {
 			ServerBootstrap b = new ServerBootstrap();
 			b.group(bossGroup, workerGroup)
 					.channel(NioServerSocketChannel.class)
-					.handler(new LoggingHandler(LogLevel.INFO))
-					.childHandler(new WebSocketServerInitializer(sslCtx, mapper, listener));
+					.handler(new LoggingHandler(this.getClass(), LogLevel.INFO))
+					.childHandler(new WebSocketServerInitializer(sslCtx, sessions, mapper, listener));
 			ChannelFuture f;
 			if(listener.getHost() == null)
 				f = b.bind(port);
 			else
 				f = b.bind(host, port);
 			Channel ch = f.sync().channel();
+			log.info("Started listener on: "+listener.toURL());
 			this.listeners.put(listener, ch);
 			return listener;
 		} catch (CertificateException | InterruptedException | SSLException ex) {
