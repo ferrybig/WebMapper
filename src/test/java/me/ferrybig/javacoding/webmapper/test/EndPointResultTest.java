@@ -9,8 +9,11 @@ import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.EndpointResult.ContentType;
 import me.ferrybig.javacoding.webmapper.EndpointResult.Result;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -65,5 +68,20 @@ public class EndPointResultTest {
 	public void nullContentTypeTest() {
 		new EndpointResult(Result.OK, "Hello", null).toString();
 		Assert.fail();
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void requiredCharsetAsNullContentTypeTest() {
+		ContentType.HTML.toBytes("", null);
+	}
+	
+	@Test(expected = NoSuchElementException.class)
+	public void requiredCharsetAsEmptyOptionalContentTypeTest() {
+		ContentType.HTML.toBytes("", Optional.empty());
+	}
+	
+	@Test
+	public void requiredCharsetAsCorrectCharsetContentTypeTest() {
+		ContentType.HTML.toBytes("", Optional.of(Charset.defaultCharset()));
 	}
 }
