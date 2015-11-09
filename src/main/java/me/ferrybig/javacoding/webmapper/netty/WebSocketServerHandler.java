@@ -6,6 +6,8 @@
 package me.ferrybig.javacoding.webmapper.netty;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
+import me.ferrybig.javacoding.webmapper.EndpointResult.ContentType;
+import me.ferrybig.javacoding.webmapper.EndpointResult.Result;
 import me.ferrybig.javacoding.webmapper.Listener;
 import me.ferrybig.javacoding.webmapper.Main;
 import me.ferrybig.javacoding.webmapper.Server;
@@ -56,6 +58,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 	private WebSocketServerHandshaker handshaker;
 	private final Listener listener;
 	private final SessionManager sessions;
+	private Session mySession;
 
 	private final RequestMapper mapper;
 
@@ -80,12 +83,13 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 		if (WEBSOCKET_PATH.equals(req.uri())) {
 			// Handshake
 			WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
-					getWebSocketLocation(req), null, true);
+					null, null, true);
 			handshaker = wsFactory.newHandshaker(req);
 			if (handshaker == null) {
 				WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
 			} else {
 				handshaker.handshake(ctx.channel(), req);
+				mySession = sessions.createNewSession();
 			}
 		} else {
 			if (req.method() == POST || req.method() == GET) {
@@ -159,10 +163,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 				res1.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
 
 				sendHttpResponse(ctx, req, res1);
-				return;
 			} else {
 				sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, NOT_ACCEPTABLE));
-				return;
 			}
 
 		}
@@ -185,10 +187,42 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 					.getName()));
 		}
 
-		// Send the uppercase string back.
 		String request = ((TextWebSocketFrame) frame).text();
-		System.err.printf("%s received %s%n", ctx.channel(), request); // TODO: map to RequestMapper
-		ctx.channel().write(new TextWebSocketFrame(request.toUpperCase()));
+		JSONObject json;
+		try {
+			json = new JSONObject(request);
+		} catch (JSONException ex) {
+			ctx.channel().writeAndFlush(new TextWebSocketFrame("{\"error\":\"BAD_JSON\"}")).addListener(ChannelFutureListener.CLOSE);
+			return;
+		}
+		String endpoint = json.getString("endpoint");
+		String reqid = json.getString("reqid");
+		EndpointResult<?> res = 
+				mapper.handleHttpRequest(ctx, endpoint, mySession, Optional.ofNullable(json.optJSONObject("data")));
+		JSONObject jsonRes;
+		if(res.getContentType() != ContentType.JSON) {
+			jsonRes = new JSONObject();
+			if(res.getResult() != Result.OK) {
+				jsonRes.put("error", res.getResult().name());
+			} else {
+				jsonRes.put("error", "BAD_RETURN_DATA");
+			}
+			jsonRes.put("status", "BAD_RETURN_DATA");
+			jsonRes.put("reqid", reqid);
+			jsonRes.put("reqid-connection", "close");
+			jsonRes.put("data", new JSONObject());
+		} else {
+			EndpointResult<JSONObject> obj = (EndpointResult<JSONObject>)res;
+			jsonRes = new JSONObject();
+			if(res.getResult() != Result.OK) {
+				jsonRes.put("error", res.getResult().name());
+			}
+			jsonRes.put("status", res.getResult().name());
+			jsonRes.put("reqid", reqid);
+			jsonRes.put("reqid-connection", "close");
+			jsonRes.put("data", obj.getData());
+		}
+		ctx.channel().write(new TextWebSocketFrame(jsonRes.toString()));
 	}
 
 	private static void sendHttpResponse(
@@ -210,17 +244,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		cause.printStackTrace();
+		Server.log.throwing(null, null, cause);
 		ctx.close();
-	}
-
-	private String getWebSocketLocation(FullHttpRequest req) {
-		String location = req.headers().get(HOST) + WEBSOCKET_PATH;
-		if (listener.isSsl()) {
-			return "wss://" + location;
-		} else {
-			return "ws://" + location;
-		}
 	}
 
 	@Override
