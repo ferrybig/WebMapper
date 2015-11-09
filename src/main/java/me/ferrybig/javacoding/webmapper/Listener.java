@@ -69,6 +69,11 @@ public class Listener {
 		}
 		return true;
 	}
+
+	public String toURL() {
+		return (this.ssl ? "https://" : "http://") + 
+				(host == null ? "localhost" : host) + ":" + port + "/";
+	}
 	
 	
 	
