@@ -5,25 +5,16 @@
  */
 package me.ferrybig.javacoding.webmapper.session;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -33,7 +24,13 @@ public class DefaultSessionManager implements SessionManager {
 
 	private final PermissionManager manager;
 	
+	// Should be a multiple of 5 so it can be encoded efficent into base 32(2^5)
+	private static final int HASH_SIZE_BITS = 255; 
+	
+	private final SecureRandom random = new SecureRandom();
+	
 	private final Map<String, Session> sessions = new HashMap<>();
+	
 	private int cleanupcheck = 0;
 	
 	private final SessionFactory sessionFactory;
@@ -63,18 +60,7 @@ public class DefaultSessionManager implements SessionManager {
 
 	@Override
 	public Session createNewSession() {
-		String hash;
-		try {
-			UUID uuid = UUID.randomUUID();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			try (DataOutputStream out1 = new DataOutputStream(Base64.getEncoder().wrap(out))) {
-				out1.writeLong(uuid.getLeastSignificantBits());
-				out1.writeLong(uuid.getMostSignificantBits());
-			}
-			hash = new String(out.toByteArray());
-		} catch (IOException ex) {
-			throw new AssertionError("ByteArrayOutputStream should never throw a exception", ex);
-		}
+		String hash = new BigInteger(HASH_SIZE_BITS, random).toString(32);
 		Session s = sessionFactory.createSession(hash, this);
 		if(cleanupcheck++ > 100 && this.sessions.size()> 200) {
 			this.cleanup();
