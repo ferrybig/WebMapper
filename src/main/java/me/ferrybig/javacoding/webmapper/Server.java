@@ -43,7 +43,7 @@ public class Server {
 	private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private final Map<Listener, Channel> listeners = new HashMap<>();
 	private final RequestMapper mapper;
-	private static final Logger log = Logger.getLogger(Server.class.getName());
+	public static final Logger log = Logger.getLogger(Server.class.getName());
 	private final SessionManager sessions;
 
 	public Server(SessionManager sessions, RequestMapper mapper) {
