@@ -7,8 +7,6 @@ package me.ferrybig.javacoding.webmapper;
 
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -38,28 +36,37 @@ public class VersionInfo {
 		}
 	}
 	
+	@Deprecated
 	public static VersionInfo getInstance() {
 		return INSTANCE;
 	}
-
-	public String getGroupId() {
-		return groupId;
+	
+	private static VersionInfo getInstance0() {
+		return INSTANCE;
 	}
 
-	public String getArtifactId() {
-		return artifactId;
+	public static String getGroupId() {
+		return getInstance0().groupId;
 	}
 
-	public String getVersion() {
-		return version;
+	public static String getArtifactId() {
+		return getInstance0().artifactId;
 	}
 
-	public String getGitsha() {
-		return gitsha;
+	public static String getVersion0() {
+		return getInstance0().version;
 	}
 	
-	public String getFullVersion() {
-		return fullVersion;
+	public static String getVersion() {
+		return getInstance0().version;
+	}
+	
+	public static String getGitsha() {
+		return getInstance0().gitsha;
+	}
+	
+	public static String getFullVersion() {
+		return getInstance0().fullVersion;
 	}
 	
 }
