@@ -22,6 +22,7 @@ public class VersionInfo {
 	private final String artifactId;
 	private final String version;
 	private final String gitsha;
+	private final String fullVersion;
 	
 	private VersionInfo() {
 		try {
@@ -31,6 +32,7 @@ public class VersionInfo {
 			this.artifactId = prop.getProperty("maven-artifact-id", "");
 			this.version = prop.getProperty("maven-version", "");
 			this.gitsha = prop.getProperty("git-version", "");
+			this.fullVersion = groupId + "." + artifactId + " V" + version + " (" + gitsha + ")";
 		} catch (IOException ex) {
 			throw new AssertionError("Unable to load version properties", ex);
 		}
@@ -54,6 +56,10 @@ public class VersionInfo {
 
 	public String getGitsha() {
 		return gitsha;
+	}
+	
+	public String getFullVersion() {
+		return fullVersion;
 	}
 	
 }
