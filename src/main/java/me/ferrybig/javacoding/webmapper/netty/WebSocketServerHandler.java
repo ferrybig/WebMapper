@@ -9,8 +9,6 @@ import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.EndpointResult.ContentType;
 import me.ferrybig.javacoding.webmapper.EndpointResult.Result;
 import me.ferrybig.javacoding.webmapper.Listener;
-import me.ferrybig.javacoding.webmapper.Main;
-import me.ferrybig.javacoding.webmapper.Server;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.session.Session;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
@@ -31,7 +29,6 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
-import io.netty.util.CharsetUtil;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.*;
 import io.netty.handler.codec.http.HttpHeaderValues;
@@ -44,6 +41,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,13 +52,14 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
 	private static final String WEBSOCKET_PATH = "/websocket";
 	private static final Optional<Charset> DEFAULT_CHARSET = Optional.of(Charset.forName("UTF-8"));
-
-	private WebSocketServerHandshaker handshaker;
+	private static final Logger LOGGER = Logger.getLogger(WebSocketServerHandler.class.getName());
+	
 	private final Listener listener;
 	private final SessionManager sessions;
-	private Session mySession;
-
 	private final RequestMapper mapper;
+	
+	private Session mySession;
+	private WebSocketServerHandshaker handshaker;
 
 	public WebSocketServerHandler(SessionManager sessions, RequestMapper mapper, Listener listener) {
 		this.sessions = sessions;
@@ -192,7 +191,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 		try {
 			json = new JSONObject(request);
 		} catch (JSONException ex) {
-			ctx.channel().writeAndFlush(new TextWebSocketFrame("{\"error\":\"BAD_JSON\"}")).addListener(ChannelFutureListener.CLOSE);
+			ctx.channel().writeAndFlush(new TextWebSocketFrame("{\"error\":\"BAD_JSON\"}"))
+					.addListener(ChannelFutureListener.CLOSE);
 			return;
 		}
 		String endpoint = json.getString("endpoint");
@@ -227,15 +227,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
 	private static void sendHttpResponse(
 			ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res) {
-        // Generate an error page if response getStatus code is not OK (200).
-//        if (res.status().code() != 200) {
-//            ByteBuf buf = Unpooled.copiedBuffer(res.status().toString(), CharsetUtil.UTF_8);
-//            res.content().writeBytes(buf);
-//            buf.release();
-//			res.headers().set(HttpHeaderNames.CONTENT_LENGTH,  res.content().readableBytes());
-//        }
-
-		// Send the response and close the connection if necessary.
 		ChannelFuture f = ctx.channel().writeAndFlush(res);
 		if (!isKeepAlive(req) || res.status().code() != 200) {
 			f.addListener(ChannelFutureListener.CLOSE);
@@ -244,7 +235,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		Server.log.throwing(null, null, cause);
+		LOGGER.throwing(null, null, cause);
 		ctx.close();
 	}
 

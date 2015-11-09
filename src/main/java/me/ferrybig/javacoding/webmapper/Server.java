@@ -43,7 +43,7 @@ public class Server {
 	private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private final Map<Listener, Channel> listeners = new HashMap<>();
 	private final RequestMapper mapper;
-	public static final Logger log = Logger.getLogger(Server.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
 	private final SessionManager sessions;
 
 	public Server(SessionManager sessions, RequestMapper mapper) {
@@ -78,7 +78,7 @@ public class Server {
 			else
 				f = b.bind(host, port);
 			Channel ch = f.sync().channel();
-			log.info("Started listener on: "+listener.toURL());
+			LOGGER.info("Started listener on: "+listener.toURL());
 			this.listeners.put(listener, ch);
 			return listener;
 		} catch (CertificateException | InterruptedException | SSLException ex) {
