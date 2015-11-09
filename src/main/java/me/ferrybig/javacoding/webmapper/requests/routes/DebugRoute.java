@@ -11,6 +11,7 @@ import me.ferrybig.javacoding.webmapper.requests.DefaultRequestWrapper;
 import me.ferrybig.javacoding.webmapper.session.Session;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.Optional;
+import org.json.JSONObject;
 
 /**
  *
@@ -24,7 +25,10 @@ public class DebugRoute extends DefaultRequestWrapper<Object> {
 	
 	@Override
 	protected EndpointResult handle(ChannelHandlerContext ctx, String endpoint, Session session, Optional<? super Object> userData) {
-		return new EndpointResult(EndpointResult.Result.OK, VersionInfo.getFullVersion(), EndpointResult.ContentType.TEXT);
+		JSONObject result = new JSONObject();
+		result.put("version", VersionInfo.getFullVersion());
+		result.put("session-key", session.getKey());
+		return new EndpointResult(EndpointResult.Result.OK, result, EndpointResult.ContentType.JSON);
 	}
 	
 }
