@@ -56,6 +56,7 @@ public class DefaultSession implements Session {
 	public void upgradeAuthToken(PermissionLevel level, Optional<User> realUser, Optional<User> effectiveUser) {
 		this.authToken = new DefaultAuthToken(
 				permissionManager.getPermissionsForLevel(level), level, realUser, effectiveUser);
+		this.expireDate = Instant.now().plus(10, ChronoUnit.MINUTES);
 	}
 
 	@Override
@@ -82,5 +83,28 @@ public class DefaultSession implements Session {
 	public Instant getExpireDate() {
 		return expireDate;
 	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 29 * hash + Objects.hashCode(this.key);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final DefaultSession other = (DefaultSession) obj;
+		if (!Objects.equals(this.key, other.key)) {
+			return false;
+		}
+		return true;
+	}
+	
 	
 }
