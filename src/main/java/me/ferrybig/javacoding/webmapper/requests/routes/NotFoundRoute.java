@@ -24,7 +24,7 @@ public class NotFoundRoute extends DefaultRequestWrapper<Object> {
 	
 	@Override
 	protected EndpointResult handle(ChannelHandlerContext ctx, String endpoint, Session session, Optional<? super Object> userData) {
-		return new EndpointResult(EndpointResult.Result.UNKNOWN_ENDPOINT, "", EndpointResult.ContentType.TEXT);
+		return new EndpointResult(EndpointResult.Result.UNKNOWN_ENDPOINT, "NOT FOUND", EndpointResult.ContentType.TEXT);
 	}
 	
 }
