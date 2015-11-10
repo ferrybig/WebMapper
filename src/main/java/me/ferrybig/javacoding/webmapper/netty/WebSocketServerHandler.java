@@ -53,7 +53,7 @@ import org.json.JSONObject;
  */
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
 
-	private static final String WEBSOCKET_PATH = "/websocket";
+	private static final String WEBSOCKET_PATH = "/service";
 	private static final Optional<Charset> DEFAULT_CHARSET = Optional.of(Charset.forName("UTF-8"));
 	private static final Logger LOGGER = Logger.getLogger(WebSocketServerHandler.class.getName());
 	
@@ -96,9 +96,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 		} else {
 			if (req.method() == POST || req.method() == GET) {
 				String url = req.uri();
-				String host = req.headers().get(HOST);
 				if (url.startsWith("/")) {
 					url = url.substring(1);
+				}
+				String host = req.headers().get(HOST);
+				if(host.indexOf(':')> -1) {
+					host = host.substring(0, host.indexOf(':'));
 				}
 				String cookie = req.headers().get(HttpHeaderNames.COOKIE, "");
 				Optional<String> sessionId = Optional.empty();
@@ -206,8 +209,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 					.addListener(ChannelFutureListener.CLOSE);
 			return;
 		}
-		String endpoint = json.getString("endpoint");
-		String reqid = json.getString("reqid");
+		String endpoint = json.optString("endpoint", null);
+		if(endpoint == null) {
+			ctx.channel().writeAndFlush(new TextWebSocketFrame("{\"error\":\"MISSING_ENDPOINT\"}"));
+			return;
+		}
+		String reqid = json.optString("reqid", json.optInt("reqid", 0) + "");
 		EndpointResult<?> res = 
 				mapper.handleHttpRequest(ctx, endpoint, mySession, Optional.ofNullable(json.optJSONObject("data")));
 		JSONObject jsonRes;
@@ -233,7 +240,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 			jsonRes.put("reqid-connection", "close");
 			jsonRes.put("data", obj.getData());
 		}
-		ctx.channel().write(new TextWebSocketFrame(jsonRes.toString()));
+		ctx.channel().writeAndFlush(new TextWebSocketFrame(jsonRes.toString()));
 	}
 
 	private static void sendHttpResponse(
@@ -246,7 +253,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		LOGGER.throwing(null, null, cause);
+		LOGGER.log(Level.SEVERE, "Exception caught: ", cause);
 		ctx.close();
 	}
 
