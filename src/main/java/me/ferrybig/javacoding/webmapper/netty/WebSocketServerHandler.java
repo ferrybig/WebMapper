@@ -37,10 +37,13 @@ import static io.netty.handler.codec.http.HttpMethod.*;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.*;
+import static java.net.URLEncoder.encode;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,6 +96,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 		} else {
 			if (req.method() == POST || req.method() == GET) {
 				String url = req.uri();
+				String host = req.headers().get(HOST);
 				if (url.startsWith("/")) {
 					url = url.substring(1);
 				}
@@ -140,7 +144,14 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 				}
 
 				FullHttpResponse res1 = new DefaultFullHttpResponse(HTTP_1_1, status, content);
-
+				try {
+					res1.headers().add(SET_COOKIE,
+							"SESSION=" + encode(ses.getKey(), "UTF-8") + "; "
+							+ "domain=" + encode(host, "UTF-8") + "; "
+							+ "HttpOnly");
+				} catch (UnsupportedEncodingException ex) {
+					throw new AssertionError("Charset UTF-8 tested in DefaultTest");
+				}
 				if (res.getContentType() == EndpointResult.ContentType.HTML) {
 					res1.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
 				} else if (res.getContentType() == EndpointResult.ContentType.TEXT) {
