@@ -141,6 +141,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 					case UNKNOWN_ENDPOINT:
 						status = NOT_FOUND;
 						break;
+					case SERVER_ERROR:
 					default:
 						status = INTERNAL_SERVER_ERROR;
 						break;

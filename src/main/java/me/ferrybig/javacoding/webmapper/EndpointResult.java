@@ -85,7 +85,8 @@ public class EndpointResult<T> {
 		UNKNOWN_ENDPOINT,
 		SYNTAX_ERROR,
 		CONFLICT,
-		AUTH_REQUIRED
+		AUTH_REQUIRED,
+		SERVER_ERROR,
 	}
 
 	public abstract static class ContentType<T> {
