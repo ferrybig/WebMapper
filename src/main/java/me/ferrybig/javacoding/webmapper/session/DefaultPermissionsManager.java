@@ -30,13 +30,15 @@ public class DefaultPermissionsManager implements PermissionManager {
 	}
 
 	@Override
-	public void registerPermission(Permission permission) {
+	public Permission registerPermission(Permission permission) {
 		permission.getPermissionLevel().stream().forEach(l->permissionsByLevel.get(l).add(permission));
+		return permission;
 	}
 
 	@Override
-	public void unregisterPermission(Permission permission) {
+	public Permission unregisterPermission(Permission permission) {
 		permission.getPermissionLevel().stream().forEach(l->permissionsByLevel.get(l).remove(permission));
+		return permission;
 	}
 	
 }

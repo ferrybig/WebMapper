@@ -14,7 +14,7 @@ import java.util.Set;
 public interface PermissionManager {
 	public Set<Permission> getPermissionsForLevel(PermissionLevel level);
 	
-	public void registerPermission(Permission permission);
+	public Permission registerPermission(Permission permission);
 	
-	public void unregisterPermission(Permission permission);
+	public Permission unregisterPermission(Permission permission);
 }
