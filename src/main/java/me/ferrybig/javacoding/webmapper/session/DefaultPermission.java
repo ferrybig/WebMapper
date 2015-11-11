@@ -22,9 +22,18 @@ public class DefaultPermission implements Permission {
 	private final Set<PermissionLevel> permissionLevel;
 	private final String description;
 
+	public DefaultPermission(String name, PermissionLevel ... permissionsLevel) {
+		this(name, "", new HashSet<>(Arrays.asList(permissionsLevel)));
+	}
+	
 	public DefaultPermission(String name, String description, PermissionLevel ... permissionsLevel) {
 		this(name, description, new HashSet<>(Arrays.asList(permissionsLevel)));
 	}
+	
+	public DefaultPermission(String name, Set<PermissionLevel> permissionLevel) {
+		this(name, "", permissionLevel);
+	}
+	
 	public DefaultPermission(String name, String description, Set<PermissionLevel> permissionLevel) {
 		this.name = Objects.requireNonNull(name);
 		if(Objects.requireNonNull(permissionLevel).stream().filter((l) -> l == null).count() != 0) {

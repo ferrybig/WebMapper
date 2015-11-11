@@ -41,7 +41,7 @@ public class DefaultPermissionsTest {
 	
 	@Test(expected = NullPointerException.class)
 	public void nullSecondArgumentTest() {
-		new DefaultPermission("server.test", null, PermissionLevel.ADMIN).toString();
+		new DefaultPermission("server.test", (String)null, PermissionLevel.ADMIN).toString();
 	}
 	
 	@Test(expected = NullPointerException.class)
