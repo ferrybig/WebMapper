@@ -30,14 +30,31 @@ public class SimpleRequestRouter implements RequestMapper {
 	public void addRoute(String endpoint, RequestMapper route) {
 		this.addRoute(endpoint, route, true);
 	}
-
+	
 	public void addRoute(String endpoint, RequestMapper route, boolean useSubString) {
+		this.addRoute(endpoint, route, useSubString, false);
+	}
+
+	@SuppressWarnings("UnusedAssignment")
+	public void addRoute(String endpoint, RequestMapper route, boolean useSubString, boolean exactMatch) {
 		Objects.requireNonNull(route, "route == null");
+		if (exactMatch) {
+			final RequestMapper route2 = Objects.requireNonNull(route, "route == null");
+			final int endpointLength = endpoint.length();
+			route = (ChannelHandlerContext ctx, String endpoint1, Session session, Optional<?> userData) -> {
+				if (endpoint.equals(endpoint1)) {
+					return route2.handleHttpRequest(ctx, endpoint1.substring(endpointLength), session, userData);
+				} else {
+					return defaultRoute.handleHttpRequest(ctx, endpoint, session, userData);
+				}
+			};
+		}
 		if (useSubString) {
 			final RequestMapper route2 = Objects.requireNonNull(route, "route == null");
 			final int endpointLength = endpoint.length();
 			route = (ChannelHandlerContext ctx, String endpoint1, Session session, Optional<?> userData) -> route2.handleHttpRequest(ctx, endpoint1.substring(endpointLength), session, userData);
 		}
+		
 		this.routes.put(endpoint, route);
 	}
 
