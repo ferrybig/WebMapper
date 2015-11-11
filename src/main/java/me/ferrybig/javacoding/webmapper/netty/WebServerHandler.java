@@ -42,6 +42,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,15 +60,21 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 	
 	private final Listener listener;
 	private final SessionManager sessions;
-	private final RequestMapper mapper;
+	private final RequestMapper httpMapper;
+	private final RequestMapper websocketMapper;
 	
 	private Session mySession;
 	private WebSocketServerHandshaker handshaker;
 
-	public WebServerHandler(SessionManager sessions, RequestMapper mapper, Listener listener) {
-		this.sessions = sessions;
-		this.mapper = mapper;
-		this.listener = listener;
+	public WebServerHandler(SessionManager sessions, RequestMapper httpMapper, Listener listener) {
+		this(sessions, httpMapper, httpMapper, listener);
+	}
+
+	public WebServerHandler(SessionManager sessions, RequestMapper httpMapper, RequestMapper websocketMapper, Listener listener) {
+		this.sessions = Objects.requireNonNull(sessions, "sessions == null");
+		this.httpMapper = Objects.requireNonNull(httpMapper, "httpMapper == null");
+		this.websocketMapper = Objects.requireNonNull(websocketMapper, "websocketMapper == null");
+		this.listener = Objects.requireNonNull(listener, "listener == null");
 	}
 
 	@Override
@@ -117,7 +124,7 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 					}
 				}
 				Session ses = sessions.findOrCreateSession(sessionId);
-				EndpointResult<?> res = this.mapper.handleHttpRequest(ctx, url, ses, 
+				EndpointResult<?> res = this.httpMapper.handleHttpRequest(ctx, url, ses, 
 						decodeRequest(Optional.ofNullable(req.headers().get(CONTENT_TYPE)), req.content()));
 
 				ByteBuf content = Unpooled.wrappedBuffer(res.asBytes(DEFAULT_CHARSET));
@@ -217,7 +224,7 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 		}
 		String reqid = json.optString("reqid", json.optInt("reqid", 0) + "");
 		EndpointResult<?> res = 
-				mapper.handleHttpRequest(ctx, endpoint, mySession, Optional.ofNullable(json.optJSONObject("data")));
+				websocketMapper.handleHttpRequest(ctx, endpoint, mySession, Optional.ofNullable(json.optJSONObject("data")));
 		JSONObject jsonRes;
 		if(res.getContentType() != ContentType.JSON) {
 			jsonRes = new JSONObject();
