@@ -51,11 +51,11 @@ import org.json.JSONObject;
 /**
  * Handles handshakes and messages
  */
-public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
+public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 
 	private static final String WEBSOCKET_PATH = "/service";
 	private static final Optional<Charset> DEFAULT_CHARSET = Optional.of(Charset.forName("UTF-8"));
-	private static final Logger LOGGER = Logger.getLogger(WebSocketServerHandler.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(WebServerHandler.class.getName());
 	
 	private final Listener listener;
 	private final SessionManager sessions;
@@ -64,7 +64,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 	private Session mySession;
 	private WebSocketServerHandshaker handshaker;
 
-	public WebSocketServerHandler(SessionManager sessions, RequestMapper mapper, Listener listener) {
+	public WebServerHandler(SessionManager sessions, RequestMapper mapper, Listener listener) {
 		this.sessions = sessions;
 		this.mapper = mapper;
 		this.listener = listener;

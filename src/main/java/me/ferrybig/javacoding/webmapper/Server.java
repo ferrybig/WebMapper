@@ -7,7 +7,7 @@ package me.ferrybig.javacoding.webmapper;
 
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
-import me.ferrybig.javacoding.webmapper.netty.WebSocketServerInitializer;
+import me.ferrybig.javacoding.webmapper.netty.WebServerInitializer;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -71,7 +71,7 @@ public class Server {
 			b.group(bossGroup, workerGroup)
 					.channel(NioServerSocketChannel.class)
 					.handler(new LoggingHandler(this.getClass(), LogLevel.INFO))
-					.childHandler(new WebSocketServerInitializer(sslCtx, sessions, mapper, listener));
+					.childHandler(new WebServerInitializer(sslCtx, sessions, mapper, listener));
 			ChannelFuture f;
 			if(listener.getHost() == null)
 				f = b.bind(port);

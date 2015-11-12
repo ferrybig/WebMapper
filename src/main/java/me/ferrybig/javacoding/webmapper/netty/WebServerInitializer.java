@@ -13,7 +13,7 @@ import io.netty.handler.ssl.SslContext;
 
 /**
  */
-public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
+public class WebServerInitializer extends ChannelInitializer<SocketChannel> {
 
 	private final Listener listener;
 	private final SslContext sslCtx;
@@ -27,7 +27,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
 	 * @param mapper
 	 * @param listener
 	 */
-	public WebSocketServerInitializer(SslContext sslCtx, SessionManager sessions, RequestMapper mapper, Listener listener) {
+	public WebServerInitializer(SslContext sslCtx, SessionManager sessions, RequestMapper mapper, Listener listener) {
 		this.sslCtx = sslCtx;
 		this.sessions = sessions;
 		this.mapper = mapper;
@@ -48,6 +48,6 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
 		// Compress data for less data usage
 		pipeline.addLast("deflater", new HttpContentCompressor());
 		// Handle our frames
-		pipeline.addLast("main", new WebSocketServerHandler(sessions, mapper, listener));
+		pipeline.addLast("main", new WebServerHandler(sessions, mapper, listener));
 	}
 }
