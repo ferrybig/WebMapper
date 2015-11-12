@@ -6,6 +6,7 @@ import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.ssl.SslContext;
@@ -38,13 +39,15 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
 		ChannelPipeline pipeline = ch.pipeline();
 		if (sslCtx != null) {
 			// Handle ssl
-			pipeline.addLast(sslCtx.newHandler(ch.alloc()));
+			pipeline.addLast("ssl-translator", sslCtx.newHandler(ch.alloc()));
 		}
 		// Decode HTTP request
-		pipeline.addLast(new HttpServerCodec());
+		pipeline.addLast("http-codec", new HttpServerCodec());
 		// Support up to 8K of incoming data and handle 100-CONTINUE:
-		pipeline.addLast(new HttpObjectAggregator(8 * 1024));
+		pipeline.addLast("dechunker", new HttpObjectAggregator(8 * 1024));
+		// Compress data for less data usage
+		pipeline.addLast("deflater", new HttpContentCompressor());
 		// Handle our frames
-		pipeline.addLast(new WebSocketServerHandler(sessions, mapper, listener));
+		pipeline.addLast("main", new WebSocketServerHandler(sessions, mapper, listener));
 	}
 }
