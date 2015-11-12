@@ -7,24 +7,31 @@ package me.ferrybig.javacoding.webmapper.requests.routes;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.session.Session;
-import me.ferrybig.javacoding.webmapper.requests.DefaultRequestWrapper;
+import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.Optional;
+import org.json.JSONObject;
 
 /**
  *
  * @author Fernando
  */
-public class NotFoundRoute extends DefaultRequestWrapper<Object> {
+public class NotFoundRoute implements RequestMapper {
 
-	public NotFoundRoute() {
-		super(Object.class);
-		this.setAllowUserData(DataType.OPTIONAL);
+	public static final NotFoundRoute JSON = new NotFoundRoute(new JSONObject(), EndpointResult.ContentType.JSON);
+	
+	public static final NotFoundRoute TEXT = new NotFoundRoute("No permissions", EndpointResult.ContentType.TEXT);
+	
+	private final EndpointResult<?> returnData;
+	
+	public <T> NotFoundRoute(T data, EndpointResult.ContentType<T> type) {
+		returnData = new EndpointResult<>(EndpointResult.Result.UNKNOWN_ENDPOINT, data, type);
 	}
 	
 	@Override
-	protected EndpointResult handle(ChannelHandlerContext ctx, String endpoint, Session session, Optional<? super Object> userData) {
-		return new EndpointResult(EndpointResult.Result.UNKNOWN_ENDPOINT, "NOT FOUND", EndpointResult.ContentType.TEXT);
+	public EndpointResult handleHttpRequest(ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData) {
+		return returnData;
 	}
 	
 }
+
