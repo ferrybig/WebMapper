@@ -9,26 +9,22 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.ssl.SslContext;
 
 /**
  */
 public class WebServerInitializer extends ChannelInitializer<SocketChannel> {
 
-	private final Listener listener;
-	private final SslContext sslCtx;
-	private final SessionManager sessions;
-	private final RequestMapper mapper;
+	protected final Listener listener;
+	protected final SessionManager sessions;
+	protected final RequestMapper mapper;
 
 	/**
 	 *
-	 * @param sslCtx
 	 * @param sessions
 	 * @param mapper
 	 * @param listener
 	 */
-	public WebServerInitializer(SslContext sslCtx, SessionManager sessions, RequestMapper mapper, Listener listener) {
-		this.sslCtx = sslCtx;
+	public WebServerInitializer(SessionManager sessions, RequestMapper mapper, Listener listener) {
 		this.sessions = sessions;
 		this.mapper = mapper;
 		this.listener = listener;
@@ -37,10 +33,7 @@ public class WebServerInitializer extends ChannelInitializer<SocketChannel> {
 	@Override
 	public void initChannel(SocketChannel ch) throws Exception {
 		ChannelPipeline pipeline = ch.pipeline();
-		if (sslCtx != null) {
-			// Handle ssl
-			pipeline.addLast("ssl-translator", sslCtx.newHandler(ch.alloc()));
-		}
+		
 		// Decode HTTP request
 		pipeline.addLast("http-codec", new HttpServerCodec());
 		// Support up to 8K of incoming data and handle 100-CONTINUE:

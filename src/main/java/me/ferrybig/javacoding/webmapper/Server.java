@@ -8,6 +8,7 @@ package me.ferrybig.javacoding.webmapper;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
 import me.ferrybig.javacoding.webmapper.netty.WebServerInitializer;
+import me.ferrybig.javacoding.webmapper.netty.WebSslServerInitializer;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -59,26 +60,28 @@ public class Server {
 				return listener;
 			}
 			
-			final SslContext sslCtx;
-			if (ssl) {
+			ServerBootstrap b = new ServerBootstrap();
+			WebServerInitializer init;
+			if(ssl) {
+				SslContext sslCtx;
 				SelfSignedCertificate ssc = new SelfSignedCertificate();
 				sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
 						.sslProvider(SslProvider.JDK).build();
+				init = new WebSslServerInitializer(sslCtx, sessions, mapper, listener);
 			} else {
-				sslCtx = null;
+				init = new WebServerInitializer(sessions, mapper, listener);
 			}
-			ServerBootstrap b = new ServerBootstrap();
 			b.group(bossGroup, workerGroup)
 					.channel(NioServerSocketChannel.class)
 					.handler(new LoggingHandler(this.getClass(), LogLevel.INFO))
-					.childHandler(new WebServerInitializer(sslCtx, sessions, mapper, listener));
+					.childHandler(init);
 			ChannelFuture f;
 			if(listener.getHost() == null)
 				f = b.bind(port);
 			else
 				f = b.bind(host, port);
 			Channel ch = f.sync().channel();
-			LOGGER.info("Started listener on: "+listener.toURL());
+			LOGGER.log(Level.INFO, "Started listener on: {0}", listener.toURL());
 			this.listeners.put(listener, ch);
 			return listener;
 		} catch (CertificateException | InterruptedException | SSLException ex) {
