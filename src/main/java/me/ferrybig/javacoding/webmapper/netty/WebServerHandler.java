@@ -109,7 +109,13 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 						new LazySessionSupplier(sessions::createNewSession), server, listener);
 			}
 		} else {
-			if (req.method() == POST || req.method() == GET) {
+			if (req.method() == OPTIONS) {
+				FullHttpResponse res1 = new DefaultFullHttpResponse(HTTP_1_1, NO_CONTENT, Unpooled.EMPTY_BUFFER);
+				res1.headers().set("Access-Control-Allow-Headers", "Content-Type");
+				res1.headers().set("Access-Control-Allow-Methods", "POST,GET");
+				res1.headers().set("Access-Control-Allow-Origin", "*");
+				sendHttpResponse(ctx, req, res1);
+			} else if (req.method() == POST || req.method() == GET || req.method() == HEAD) {
 				String url = req.uri();
 				if (url.startsWith("/")) {
 					url = url.substring(1);
@@ -191,6 +197,9 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 				} else {
 
 				}
+				res1.headers().set("Access-Control-Allow-Headers", "Content-Type");
+				res1.headers().set("Access-Control-Allow-Methods", "POST,GET");
+				res1.headers().set("Access-Control-Allow-Origin", "*");
 
 				res1.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
 
