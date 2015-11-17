@@ -9,6 +9,7 @@ import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
 import me.ferrybig.javacoding.webmapper.netty.WebServerInitializer;
 import me.ferrybig.javacoding.webmapper.netty.WebSslServerInitializer;
+import me.ferrybig.javacoding.webmapper.session.PermissionManager;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -43,12 +44,14 @@ public class Server {
 	private final EventLoopGroup bossGroup = new NioEventLoopGroup(2);
 	private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private final Map<Listener, Channel> listeners = new HashMap<>();
+	private final PermissionManager permissions;
 	private final RequestMapper mapper;
 	private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
 	private final SessionManager sessions;
 
-	public Server(SessionManager sessions, RequestMapper mapper) {
+	public Server(SessionManager sessions, PermissionManager permissions, RequestMapper mapper) {
 		this.sessions = sessions;
+		this.permissions = permissions;
 		this.mapper = mapper;
 		
 	}
@@ -92,4 +95,13 @@ public class Server {
 	public Set<Listener> getListeners() {
 		return Collections.unmodifiableSet(this.listeners.keySet());
 	}
+
+	public SessionManager getSessions() {
+		return sessions;
+	}
+
+	public PermissionManager getPermissions() {
+		return permissions;
+	}
+	
 }
