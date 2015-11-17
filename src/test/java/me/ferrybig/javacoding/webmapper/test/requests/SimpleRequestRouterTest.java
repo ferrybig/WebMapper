@@ -6,12 +6,20 @@
 package me.ferrybig.javacoding.webmapper.test.requests;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
+import me.ferrybig.javacoding.webmapper.Listener;
+import me.ferrybig.javacoding.webmapper.Server;
+import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
 import me.ferrybig.javacoding.webmapper.session.Session;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.requests.SimpleRequestRouter;
+import me.ferrybig.javacoding.webmapper.requests.requests.SessionSupplier;
+import me.ferrybig.javacoding.webmapper.requests.requests.SimpleWebServerRequest;
+import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
+import me.ferrybig.javacoding.webmapper.session.PermissionManager;
+import me.ferrybig.javacoding.webmapper.session.SessionManager;
+import me.ferrybig.javacoding.webmapper.test.empty.EmptyChannelHandlerContext;
 import io.netty.channel.ChannelHandlerContext;
-import java.nio.charset.Charset;
-import java.util.Optional;
+import java.util.Set;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -23,26 +31,64 @@ public class SimpleRequestRouterTest {
 
 	private static final EndpointResult RESULT
 			= new EndpointResult(EndpointResult.Result.OK, "", EndpointResult.ContentType.TEXT);
-	private static final RequestMapper SUCCESS = (ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData) -> {
+	private static final RequestMapper SUCCESS = (req) -> {
 		return RESULT;
 	};
-	private static final RequestMapper FAILING = (ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData) -> {
+	private static final RequestMapper FAILING = (req) -> {
 		fail();
 		throw new AssertionError();
+	};
+	private static final Server emptyServer = new Server() {
+
+		@Override
+		public Listener addListener(String host, int port, boolean ssl) throws ListenerException {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public Set<Listener> getListeners() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public PermissionManager getPermissions() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public SessionManager getSessions() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+	};
+	private static final Listener listener = new Listener("127.0.0.1",80,false);
+	private static final ChannelHandlerContext emptycontext = new EmptyChannelHandlerContext();
+	private static final SessionSupplier emptysessionSupplier = new SessionSupplier() {
+
+		@Override
+		public Session getSession() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean hasTouchedSession() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
 	};
 
 	@Test
 	public void exactMatchTest() {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", SUCCESS);
-		assertEquals(mapper.handleHttpRequest(null, "/test", null, Optional.empty()), RESULT);
+		WebServerRequest req = new SimpleWebServerRequest("/test", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
 	}
 
 	@Test
 	public void weakMatchTest() {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", SUCCESS);
-		assertEquals(mapper.handleHttpRequest(null, "/test/1", null, Optional.empty()), RESULT);
+		WebServerRequest req = new SimpleWebServerRequest("/test/1", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
 	}
 
 	@Test
@@ -50,12 +96,14 @@ public class SimpleRequestRouterTest {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", FAILING);
 		mapper.addRoute("/test/1", SUCCESS);
-		assertEquals(mapper.handleHttpRequest(null, "/test/1/2", null, Optional.empty()), RESULT);
+		WebServerRequest req = new SimpleWebServerRequest("/test/1/2", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
 
 		mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test/1", SUCCESS);
 		mapper.addRoute("/test", FAILING);
-		assertEquals(mapper.handleHttpRequest(null, "/test/1/2", null, Optional.empty()), RESULT);
+		req = new SimpleWebServerRequest("/test/1/2", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
 	}
 
 	@Test
@@ -64,47 +112,52 @@ public class SimpleRequestRouterTest {
 		mapper.addRoute("/test", FAILING);
 		mapper.addRoute("/test/1", FAILING);
 		mapper.addRoute("/1/2", FAILING);
-		assertEquals(mapper.handleHttpRequest(null, "/blah/1/2", null, Optional.empty()), RESULT);
+		WebServerRequest req = new SimpleWebServerRequest("/blah/1/2", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
 	}
 
 	@Test
 	public void substringWorksTest() {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
-		mapper.addRoute("/test", (ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData) -> {
-			assertEquals(endpoint.length(), "".length());
+		mapper.addRoute("/test", (req) -> {
+			assertEquals(req.endpoint().length(), "".length());
 			return RESULT;
 		});
-		assertEquals(mapper.handleHttpRequest(null, "/test", null, Optional.empty()), RESULT);
+		WebServerRequest req = new SimpleWebServerRequest("/test", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
 	}
 
 	@Test
 	public void substringWorksNonExactMatchTest() {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
-		mapper.addRoute("/test", (ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData) -> {
-			assertEquals(endpoint.length(), "/ttt".length());
+		mapper.addRoute("/test", (req) -> {
+			assertEquals(req.endpoint().length(), "/ttt".length());
 			return RESULT;
 		});
-		assertEquals(mapper.handleHttpRequest(null, "/test/ttt", null, Optional.empty()), RESULT);
+		WebServerRequest req = new SimpleWebServerRequest("/test/ttt", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
 	}
 
 	@Test
 	public void substringCanBeDisabledTest() {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
-		mapper.addRoute("/test", (ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData) -> {
-			assertEquals(endpoint.length(), "/test".length());
+		mapper.addRoute("/test", (req) -> {
+			assertEquals(req.endpoint().length(), "/test".length());
 			return RESULT;
 		}, false);
-		assertEquals(mapper.handleHttpRequest(null, "/test", null, Optional.empty()), RESULT);
+		WebServerRequest req = new SimpleWebServerRequest("/test", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
 	}
 
 	@Test
 	public void substringCanBeDisabledNonExactMatchTest() {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
-		mapper.addRoute("/test", (ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData) -> {
-			assertEquals(endpoint.length(), "/test/ttt".length());
+		mapper.addRoute("/test", (req) -> {
+			assertEquals(req.endpoint().length(), "/test/ttt".length());
 			return RESULT;
 		}, false);
-		assertEquals(mapper.handleHttpRequest(null, "/test/ttt", null, Optional.empty()), RESULT);
+		WebServerRequest req = new SimpleWebServerRequest("/test/ttt", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
 	}
 	
 	@Test
@@ -112,7 +165,8 @@ public class SimpleRequestRouterTest {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(SUCCESS);
 		mapper.addRoute("/test", FAILING);
 		mapper.removeRoute("/test");
-		assertEquals(mapper.handleHttpRequest(null, "/test", null, Optional.empty()), RESULT);
+		WebServerRequest req = new SimpleWebServerRequest("/test", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
 	}
 	
 	@Test(expected = NullPointerException.class)

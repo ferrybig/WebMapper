@@ -1,6 +1,7 @@
 package me.ferrybig.javacoding.webmapper.netty;
 
 import me.ferrybig.javacoding.webmapper.Listener;
+import me.ferrybig.javacoding.webmapper.Server;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import io.netty.channel.ChannelInitializer;
@@ -15,16 +16,12 @@ import io.netty.handler.codec.http.HttpServerCodec;
 public class WebServerInitializer extends ChannelInitializer<SocketChannel> {
 
 	protected final Listener listener;
+	private final Server server;
 	protected final SessionManager sessions;
 	protected final RequestMapper mapper;
 
-	/**
-	 *
-	 * @param sessions
-	 * @param mapper
-	 * @param listener
-	 */
-	public WebServerInitializer(SessionManager sessions, RequestMapper mapper, Listener listener) {
+	public WebServerInitializer(Server server, SessionManager sessions, RequestMapper mapper, Listener listener) {
+		this.server = server;
 		this.sessions = sessions;
 		this.mapper = mapper;
 		this.listener = listener;
@@ -41,6 +38,6 @@ public class WebServerInitializer extends ChannelInitializer<SocketChannel> {
 		// Compress data for less data usage
 		pipeline.addLast("deflater", new HttpContentCompressor());
 		// Handle our frames
-		pipeline.addLast("main", new WebServerHandler(sessions, mapper, listener));
+		pipeline.addLast("main", new WebServerHandler(server, sessions, mapper, listener));
 	}
 }

@@ -6,16 +6,12 @@
 package me.ferrybig.javacoding.webmapper.requests;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
-import me.ferrybig.javacoding.webmapper.session.Session;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
-import java.util.Optional;
+import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
 
 /**
  *
  * @author Fernando
  */
 public interface RequestMapper {
-	public EndpointResult handleHttpRequest(ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData);
+	public EndpointResult handleHttpRequest(WebServerRequest req);
 }

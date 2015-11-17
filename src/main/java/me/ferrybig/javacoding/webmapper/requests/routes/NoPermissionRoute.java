@@ -9,9 +9,7 @@ import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.EndpointResult.ContentType;
 import me.ferrybig.javacoding.webmapper.EndpointResult.Result;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
-import me.ferrybig.javacoding.webmapper.session.Session;
-import io.netty.channel.ChannelHandlerContext;
-import java.util.Optional;
+import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
 import org.json.JSONObject;
 
 /**
@@ -31,7 +29,7 @@ public class NoPermissionRoute implements RequestMapper {
 	}
 	
 	@Override
-	public EndpointResult handleHttpRequest(ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData) {
+	public EndpointResult handleHttpRequest(WebServerRequest req) {
 		return returnData;
 	}
 	

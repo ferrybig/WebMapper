@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper.netty;
 
 import me.ferrybig.javacoding.webmapper.Listener;
+import me.ferrybig.javacoding.webmapper.Server;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import io.netty.channel.ChannelPipeline;
@@ -17,8 +18,8 @@ public class WebSslServerInitializer extends WebServerInitializer {
 
 	private final SslContext sslCtx;
 	
-	public WebSslServerInitializer(SslContext sslCtx, SessionManager sessions, RequestMapper mapper, Listener listener) {
-		super(sessions, mapper, listener);
+	public WebSslServerInitializer(SslContext sslCtx, Server server, SessionManager sessions, RequestMapper mapper, Listener listener) {
+		super(server, sessions, mapper, listener);
 		this.sslCtx = Objects.requireNonNull(sslCtx, "sslCtx == null");
 	}
 	

@@ -7,27 +7,21 @@ package me.ferrybig.javacoding.webmapper.requests.routes;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.VersionInfo;
-import me.ferrybig.javacoding.webmapper.requests.DefaultRequestWrapper;
-import me.ferrybig.javacoding.webmapper.session.Session;
-import io.netty.channel.ChannelHandlerContext;
-import java.util.Optional;
+import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
+import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
 import org.json.JSONObject;
 
 /**
  *
  * @author Fernando
  */
-public class DebugRoute extends DefaultRequestWrapper<Object> {
+public class DebugRoute implements RequestMapper {
 
-	public DebugRoute() {
-		super(Object.class);
-	}
-	
 	@Override
-	protected EndpointResult handle(ChannelHandlerContext ctx, String endpoint, Session session, Optional<? super Object> userData) {
+	public EndpointResult handleHttpRequest(WebServerRequest req) {
 		JSONObject result = new JSONObject();
 		result.put("version", VersionInfo.getFullVersion());
-		result.put("session-key", session.getKey());
+		result.put("session-key", req.getSession().getKey());
 		return new EndpointResult(EndpointResult.Result.OK, result, EndpointResult.ContentType.JSON);
 	}
 	

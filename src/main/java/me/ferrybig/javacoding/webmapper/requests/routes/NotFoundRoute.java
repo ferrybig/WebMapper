@@ -6,10 +6,8 @@
 package me.ferrybig.javacoding.webmapper.requests.routes;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
-import me.ferrybig.javacoding.webmapper.session.Session;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
-import io.netty.channel.ChannelHandlerContext;
-import java.util.Optional;
+import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
 import org.json.JSONObject;
 
 /**
@@ -29,7 +27,7 @@ public class NotFoundRoute implements RequestMapper {
 	}
 	
 	@Override
-	public EndpointResult handleHttpRequest(ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData) {
+	public EndpointResult handleHttpRequest(WebServerRequest req) {
 		return returnData;
 	}
 	

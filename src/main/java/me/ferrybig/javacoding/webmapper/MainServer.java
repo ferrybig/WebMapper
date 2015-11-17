@@ -71,9 +71,9 @@ public class MainServer implements Server {
 				SelfSignedCertificate ssc = new SelfSignedCertificate();
 				sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
 						.sslProvider(SslProvider.JDK).build();
-				init = new WebSslServerInitializer(sslCtx, sessions, mapper, listener);
+				init = new WebSslServerInitializer(sslCtx, this, sessions, mapper, listener);
 			} else {
-				init = new WebServerInitializer(sessions, mapper, listener);
+				init = new WebServerInitializer(this, sessions, mapper, listener);
 			}
 			b.group(bossGroup, workerGroup)
 					.channel(NioServerSocketChannel.class)

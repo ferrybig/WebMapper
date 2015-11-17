@@ -6,8 +6,7 @@
 package me.ferrybig.javacoding.webmapper.requests;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
-import me.ferrybig.javacoding.webmapper.session.Session;
-import io.netty.channel.ChannelHandlerContext;
+import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,19 +39,18 @@ public class SimpleRequestRouter implements RequestMapper {
 		Objects.requireNonNull(route, "route == null");
 		if (exactMatch) {
 			final RequestMapper route2 = Objects.requireNonNull(route, "route == null");
-			final int endpointLength = endpoint.length();
-			route = (ChannelHandlerContext ctx, String endpoint1, Session session, Optional<?> userData) -> {
-				if (endpoint.equals(endpoint1)) {
-					return route2.handleHttpRequest(ctx, endpoint1.substring(endpointLength), session, userData);
+			route = (request) -> {
+				if (endpoint.equals(request.getEndpoint())) {
+					return route2.handleHttpRequest(request);
 				} else {
-					return defaultRoute.handleHttpRequest(ctx, endpoint, session, userData);
+					return defaultRoute.handleHttpRequest(request);
 				}
 			};
 		}
 		if (useSubString) {
 			final RequestMapper route2 = Objects.requireNonNull(route, "route == null");
 			final int endpointLength = endpoint.length();
-			route = (ChannelHandlerContext ctx, String endpoint1, Session session, Optional<?> userData) -> route2.handleHttpRequest(ctx, endpoint1.substring(endpointLength), session, userData);
+			route = (req) -> route2.handleHttpRequest(req.endpoint(req.endpoint().substring(endpointLength)));
 		}
 		
 		this.routes.put(endpoint, route);
@@ -88,7 +86,7 @@ public class SimpleRequestRouter implements RequestMapper {
 	}
 
 	@Override
-	public EndpointResult handleHttpRequest(ChannelHandlerContext ctx, String endpoint, Session session, Optional<?> userData) {
-		return resolvRoute(endpoint).handleHttpRequest(ctx, endpoint, session, userData);
+	public EndpointResult handleHttpRequest(WebServerRequest req) {
+		return resolvRoute(req.endpoint()).handleHttpRequest(req);
 	}
 }

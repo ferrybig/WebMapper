@@ -9,8 +9,12 @@ import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.EndpointResult.ContentType;
 import me.ferrybig.javacoding.webmapper.EndpointResult.Result;
 import me.ferrybig.javacoding.webmapper.Listener;
+import me.ferrybig.javacoding.webmapper.Server;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
-import me.ferrybig.javacoding.webmapper.session.Session;
+import me.ferrybig.javacoding.webmapper.requests.requests.SessionSupplier;
+import me.ferrybig.javacoding.webmapper.requests.requests.SimpleWebServerRequest;
+import me.ferrybig.javacoding.webmapper.requests.requests.LazySessionSupplier;
+import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -41,6 +45,7 @@ import static java.net.URLEncoder.encode;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -57,20 +62,22 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 	private static final String WEBSOCKET_PATH = "/service";
 	private static final Optional<Charset> DEFAULT_CHARSET = Optional.of(Charset.forName("UTF-8"));
 	private static final Logger LOGGER = Logger.getLogger(WebServerHandler.class.getName());
-	
+
 	private final Listener listener;
+	private final Server server;
 	private final SessionManager sessions;
 	private final RequestMapper httpMapper;
 	private final RequestMapper websocketMapper;
-	
-	private Session mySession;
+
+	private WebServerRequest websocketTmp;
 	private WebSocketServerHandshaker handshaker;
 
-	public WebServerHandler(SessionManager sessions, RequestMapper httpMapper, Listener listener) {
-		this(sessions, httpMapper, httpMapper, listener);
+	public WebServerHandler(Server server, SessionManager sessions, RequestMapper httpMapper, Listener listener) {
+		this(server, sessions, httpMapper, httpMapper, listener);
 	}
 
-	public WebServerHandler(SessionManager sessions, RequestMapper httpMapper, RequestMapper websocketMapper, Listener listener) {
+	public WebServerHandler(Server server, SessionManager sessions, RequestMapper httpMapper, RequestMapper websocketMapper, Listener listener) {
+		this.server = Objects.requireNonNull(server, "server == null");
 		this.sessions = Objects.requireNonNull(sessions, "sessions == null");
 		this.httpMapper = Objects.requireNonNull(httpMapper, "httpMapper == null");
 		this.websocketMapper = Objects.requireNonNull(websocketMapper, "websocketMapper == null");
@@ -82,7 +89,7 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 		ctx.flush();
 	}
 
-	private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) {
+	private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) throws UnsupportedEncodingException {
 		// Handle a bad request.
 		if (!req.decoderResult().isSuccess()) {
 			sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, BAD_REQUEST));
@@ -98,7 +105,8 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 				WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
 			} else {
 				handshaker.handshake(ctx.channel(), req);
-				mySession = sessions.createNewSession();
+				this.websocketTmp = new SimpleWebServerRequest(WEBSOCKET_PATH, ctx,
+						new LazySessionSupplier(sessions::createNewSession), server, listener);
 			}
 		} else {
 			if (req.method() == POST || req.method() == GET) {
@@ -107,7 +115,7 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 					url = url.substring(1);
 				}
 				String host = req.headers().get(HOST);
-				if(host.indexOf(':')> -1) {
+				if (host.indexOf(':') > -1) {
 					host = host.substring(0, host.indexOf(':'));
 				}
 				String cookie = req.headers().get(HttpHeaderNames.COOKIE, "");
@@ -123,9 +131,15 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 						break;
 					}
 				}
-				Session ses = sessions.findOrCreateSession(sessionId);
-				EndpointResult<?> res = this.httpMapper.handleHttpRequest(ctx, url, ses, 
-						decodeRequest(Optional.ofNullable(req.headers().get(CONTENT_TYPE)), req.content()));
+				final Optional<String> sessionId0 = sessionId;
+				final SessionSupplier t;
+				WebServerRequest request = new SimpleWebServerRequest(url, ctx,
+						t = new LazySessionSupplier(()
+								-> sessions.findOrCreateSession(sessionId0)), server, listener,
+						decodeRequest(Optional.ofNullable(req.headers().get(CONTENT_TYPE)), req.content()).
+						map(Collections::singletonList).orElseGet(Collections::emptyList));
+
+				EndpointResult<?> res = this.httpMapper.handleHttpRequest(request);
 
 				ByteBuf content = Unpooled.wrappedBuffer(res.asBytes(DEFAULT_CHARSET));
 				HttpResponseStatus status;
@@ -155,14 +169,11 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 				}
 
 				FullHttpResponse res1 = new DefaultFullHttpResponse(HTTP_1_1, status, content);
-				try {
+				if(t.hasTouchedSession())
 					res1.headers().add(SET_COOKIE,
-							"SESSION=" + encode(ses.getKey(), "UTF-8") + "; "
+							"SESSION=" + encode(t.session().getKey(), "UTF-8") + "; "
 							+ "domain=" + encode(host, "UTF-8") + "; "
 							+ "HttpOnly");
-				} catch (UnsupportedEncodingException ex) {
-					throw new AssertionError("Charset UTF-8 tested in DefaultTest");
-				}
 				if (res.getContentType() == EndpointResult.ContentType.HTML) {
 					res1.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
 				} else if (res.getContentType() == EndpointResult.ContentType.TEXT) {
@@ -218,34 +229,41 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 			return;
 		}
 		String endpoint = json.optString("endpoint", null);
-		if(endpoint == null) {
+		if (endpoint == null) {
 			ctx.channel().writeAndFlush(new TextWebSocketFrame("{\"error\":\"MISSING_ENDPOINT\"}"));
 			return;
 		}
 		String reqid = json.optString("reqid", json.optInt("reqid", 0) + "");
-		EndpointResult<?> res = 
-				websocketMapper.handleHttpRequest(ctx, endpoint, mySession, Optional.ofNullable(json.optJSONObject("data")));
+		boolean containedReqId = json.has("reqid");
+		
+		websocketTmp.endpoint(endpoint).setDataOrClear(json.optJSONObject("data"));
+		
+		EndpointResult<?> res = websocketMapper.handleHttpRequest(websocketTmp);
 		JSONObject jsonRes;
-		if(res.getContentType() != ContentType.JSON) {
+		if (res.getContentType() != ContentType.JSON) {
 			jsonRes = new JSONObject();
-			if(res.getResult() != Result.OK) {
+			if (res.getResult() != Result.OK) {
 				jsonRes.put("error", res.getResult().name());
 			} else {
 				jsonRes.put("error", "BAD_RETURN_DATA");
 			}
 			jsonRes.put("status", "BAD_RETURN_DATA");
-			jsonRes.put("reqid", reqid);
-			jsonRes.put("reqid-connection", "close");
+			if(containedReqId) {
+				jsonRes.put("reqid", reqid);
+				jsonRes.put("reqid-connection", "close");
+			}
 			jsonRes.put("data", new JSONObject());
 		} else {
-			EndpointResult<JSONObject> obj = (EndpointResult<JSONObject>)res;
+			EndpointResult<JSONObject> obj = (EndpointResult<JSONObject>) res;
 			jsonRes = new JSONObject();
-			if(res.getResult() != Result.OK) {
+			if (res.getResult() != Result.OK) {
 				jsonRes.put("error", res.getResult().name());
 			}
 			jsonRes.put("status", res.getResult().name());
-			jsonRes.put("reqid", reqid);
-			jsonRes.put("reqid-connection", "close");
+			if(containedReqId) {
+				jsonRes.put("reqid", reqid);
+				jsonRes.put("reqid-connection", "close");
+			}
 			jsonRes.put("data", obj.getData());
 		}
 		ctx.channel().writeAndFlush(new TextWebSocketFrame(jsonRes.toString()));
@@ -287,7 +305,7 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 		}
 	}
 
-	public Optional<?> decodeRequest(Optional<String> contentTypeHeader, ByteBuf post) {
+	public Optional<Object> decodeRequest(Optional<String> contentTypeHeader, ByteBuf post) {
 		try {
 			if (!contentTypeHeader.isPresent()) {
 
