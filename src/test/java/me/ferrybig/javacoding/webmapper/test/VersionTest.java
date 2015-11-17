@@ -15,28 +15,28 @@ import org.junit.Test;
 public class VersionTest {
 	@Test
 	public void gitshaTest() {
-		String git = VersionInfo.getInstance().getGitsha();
+		String git = VersionInfo.getGitsha();
 		assertNotEquals(git, "");
 		assertNotEquals(git, "${buildNumber}");
 	}
 	
 	@Test
 	public void artifactTest() {
-		String artifact = VersionInfo.getInstance().getArtifactId();
+		String artifact = VersionInfo.getArtifactId();
 		assertNotEquals(artifact, "");
 		assertNotEquals(artifact, "${project.artifactId}");
 	}
 	
 	@Test
 	public void groupidTest() {
-		String groupid = VersionInfo.getInstance().getGroupId();
+		String groupid = VersionInfo.getGroupId();
 		assertNotEquals(groupid, "");
 		assertNotEquals(groupid, "${project.groupId}");
 	}
 	
 	@Test
 	public void versionTest() {
-		String version = VersionInfo.getInstance().getVersion();
+		String version = VersionInfo.getVersion();
 		assertNotEquals(version, "");
 		assertNotEquals(version, "${project.version}");
 	}
