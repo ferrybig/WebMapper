@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
 import org.json.JSONObject;
 import org.junit.Test;
 import static org.junit.Assert.*;
