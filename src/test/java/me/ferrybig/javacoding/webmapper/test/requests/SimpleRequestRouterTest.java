@@ -5,6 +5,7 @@
  */
 package me.ferrybig.javacoding.webmapper.test.requests;
 
+import me.ferrybig.javacoding.webmapper.test.empty.EmptyServer;
 import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.Listener;
 import me.ferrybig.javacoding.webmapper.Server;
@@ -39,29 +40,8 @@ public class SimpleRequestRouterTest {
 		fail();
 		throw new AssertionError();
 	};
-	private static final Server emptyServer = new Server() {
-
-		@Override
-		public Listener addListener(String host, int port, SslContext ssl) throws ListenerException {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
-		@Override
-		public Set<Listener> getListeners() {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
-		@Override
-		public PermissionManager getPermissions() {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
-		@Override
-		public SessionManager getSessions() {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-	};
-	private static final Listener listener = new Listener("127.0.0.1",80,false);
+	private static final Server emptyServer = new EmptyServer();
+	private static final Listener listener = new Listener("127.0.0.1", 80, false);
 	private static final ChannelHandlerContext emptycontext = new EmptyChannelHandlerContext();
 	private static final SessionSupplier emptysessionSupplier = new SessionSupplier() {
 
