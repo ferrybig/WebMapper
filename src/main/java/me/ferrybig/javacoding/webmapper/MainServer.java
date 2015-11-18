@@ -44,6 +44,7 @@ public class MainServer implements Server {
 	private final EventLoopGroup bossGroup = new NioEventLoopGroup(2);
 	private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 	private final Map<Listener, Channel> listeners = new HashMap<>();
+	private final ServerBootstrap b;
 	private final PermissionManager permissions;
 	private final RequestMapper mapper;
 	private static final Logger LOGGER = Logger.getLogger(MainServer.class.getName());
@@ -53,24 +54,20 @@ public class MainServer implements Server {
 		this.sessions = sessions;
 		this.permissions = permissions;
 		this.mapper = mapper;
+		this.b = new ServerBootstrap();
 		
 	}
 
 	@Override
-	public Listener addListener(String host, int port, boolean ssl) throws ListenerException {
+	public synchronized Listener addListener(String host, int port, SslContext sslCtx) throws ListenerException {
 		try {
-			Listener listener = new Listener(host, port, ssl);
+			Listener listener = new Listener(host, port, sslCtx != null);
 			if (this.listeners.containsKey(listener)) {
 				return listener;
 			}
 			
-			ServerBootstrap b = new ServerBootstrap();
 			WebServerInitializer init;
-			if(ssl) {
-				SslContext sslCtx;
-				SelfSignedCertificate ssc = new SelfSignedCertificate();
-				sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
-						.sslProvider(SslProvider.JDK).build();
+			if(sslCtx != null) {
 				init = new WebSslServerInitializer(sslCtx, this, sessions, mapper, listener);
 			} else {
 				init = new WebServerInitializer(this, sessions, mapper, listener);
@@ -88,7 +85,8 @@ public class MainServer implements Server {
 			LOGGER.log(Level.INFO, "Started listener on: {0}", listener.toURL());
 			this.listeners.put(listener, ch);
 			return listener;
-		} catch (CertificateException | InterruptedException | SSLException ex) {
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
 			throw new ListenerException(ex);
 		}
 	}

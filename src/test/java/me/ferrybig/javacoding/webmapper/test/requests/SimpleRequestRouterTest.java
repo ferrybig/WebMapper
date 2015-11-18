@@ -19,6 +19,7 @@ import me.ferrybig.javacoding.webmapper.session.PermissionManager;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import me.ferrybig.javacoding.webmapper.test.empty.EmptyChannelHandlerContext;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.ssl.SslContext;
 import java.util.Set;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -41,7 +42,7 @@ public class SimpleRequestRouterTest {
 	private static final Server emptyServer = new Server() {
 
 		@Override
-		public Listener addListener(String host, int port, boolean ssl) throws ListenerException {
+		public Listener addListener(String host, int port, SslContext ssl) throws ListenerException {
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
 

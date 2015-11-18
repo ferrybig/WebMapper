@@ -8,6 +8,7 @@ package me.ferrybig.javacoding.webmapper;
 import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
 import me.ferrybig.javacoding.webmapper.session.PermissionManager;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
+import io.netty.handler.ssl.SslContext;
 import java.util.Set;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Set;
  */
 public interface Server {
 
-	Listener addListener(String host, int port, boolean ssl) throws ListenerException;
+	Listener addListener(String host, int port, SslContext sslCtx) throws ListenerException;
 
 	Set<Listener> getListeners();
 
