@@ -37,8 +37,13 @@ public class SimpleRequestRouter implements RequestMapper {
 	@SuppressWarnings("UnusedAssignment")
 	public void addRoute(String endpoint, RequestMapper route, boolean useSubString, boolean exactMatch) {
 		Objects.requireNonNull(route, "route == null");
+		if (useSubString) {
+			final RequestMapper route2 = route;
+			final int endpointLength = endpoint.length();
+			route = (req) -> route2.handleHttpRequest(req.endpoint(req.endpoint().substring(endpointLength)));
+		}
 		if (exactMatch) {
-			final RequestMapper route2 = Objects.requireNonNull(route, "route == null");
+			final RequestMapper route2 = route;
 			route = (request) -> {
 				if (endpoint.equals(request.getEndpoint())) {
 					return route2.handleHttpRequest(request);
@@ -46,11 +51,6 @@ public class SimpleRequestRouter implements RequestMapper {
 					return defaultRoute.handleHttpRequest(request);
 				}
 			};
-		}
-		if (useSubString) {
-			final RequestMapper route2 = Objects.requireNonNull(route, "route == null");
-			final int endpointLength = endpoint.length();
-			route = (req) -> route2.handleHttpRequest(req.endpoint(req.endpoint().substring(endpointLength)));
 		}
 		
 		this.routes.put(endpoint, route);
