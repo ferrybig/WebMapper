@@ -31,8 +31,8 @@ import static org.junit.Assert.*;
  */
 public class SimpleRequestRouterTest {
 
-	private static final EndpointResult RESULT
-			= new EndpointResult(EndpointResult.Result.OK, "", EndpointResult.ContentType.TEXT);
+	private static final EndpointResult<?> RESULT
+			= new EndpointResult<>(EndpointResult.Result.OK, "", EndpointResult.ContentType.TEXT);
 	private static final RequestMapper SUCCESS = (req) -> {
 		return RESULT;
 	};
