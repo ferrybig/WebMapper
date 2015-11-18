@@ -11,6 +11,7 @@ import me.ferrybig.javacoding.webmapper.session.Session;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,7 +44,7 @@ public class SimpleWebServerRequest implements WebServerRequest {
 		this.context = Objects.requireNonNull(context, "context == null");
 		this.server = Objects.requireNonNull(server, "server == null");
 		this.port = Objects.requireNonNull(port, "port == null");
-		this.data = Objects.requireNonNull(data, "data == null");
+		this.data = new LinkedList<>(data);
 	}
 
 	@Override
