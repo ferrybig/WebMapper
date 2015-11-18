@@ -5,6 +5,7 @@
  */
 package me.ferrybig.javacoding.webmapper.test.requests;
 
+import me.ferrybig.javacoding.webmapper.test.empty.EmptySessionSupplier;
 import me.ferrybig.javacoding.webmapper.test.empty.EmptyServer;
 import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.Listener;
@@ -43,18 +44,7 @@ public class SimpleRequestRouterTest {
 	private static final Server emptyServer = new EmptyServer();
 	private static final Listener listener = new Listener("127.0.0.1", 80, false);
 	private static final ChannelHandlerContext emptycontext = new EmptyChannelHandlerContext();
-	private static final SessionSupplier emptysessionSupplier = new SessionSupplier() {
-
-		@Override
-		public Session getSession() {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
-		@Override
-		public boolean hasTouchedSession() {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-	};
+	private static final SessionSupplier emptysessionSupplier = new EmptySessionSupplier();
 
 	@Test
 	public void exactMatchTest() {
@@ -142,6 +132,28 @@ public class SimpleRequestRouterTest {
 	}
 	
 	@Test
+	public void substringCanBeDisabledExactRouteMatchTest() {
+		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
+		mapper.addRoute("/test", (req) -> {
+			assertEquals(req.endpoint().length(), "/test".length());
+			return RESULT;
+		}, false, true);
+		WebServerRequest req = new SimpleWebServerRequest("/test", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
+	}
+	
+	@Test
+	public void substringCanBeEnabledExactRouteMatchTest() {
+		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
+		mapper.addRoute("/test", (req) -> {
+			assertEquals(req.endpoint().length(), "".length());
+			return RESULT;
+		}, true, true);
+		WebServerRequest req = new SimpleWebServerRequest("/test", emptycontext, emptysessionSupplier, emptyServer, listener);
+		assertEquals(mapper.handleHttpRequest(req), RESULT);
+	}
+	
+	@Test
 	public void routeCanBeRemovedTest() {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(SUCCESS);
 		mapper.addRoute("/test", FAILING);
@@ -185,4 +197,5 @@ public class SimpleRequestRouterTest {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(null);
 		mapper.toString();
 	}
+
 }
