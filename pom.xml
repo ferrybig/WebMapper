@@ -157,7 +157,7 @@
 						<configuration>
 							<rules>
 								<requireJavaVersion>
-									<version>1.8</version>
+									<version>[${jdk.version},)</version>
 								</requireJavaVersion>
 							</rules>
 						</configuration>
