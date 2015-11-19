@@ -10,6 +10,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 
 /**
  */
@@ -33,6 +34,8 @@ public class WebServerInitializer extends ChannelInitializer<SocketChannel> {
 		
 		// Decode HTTP request
 		pipeline.addLast("http-codec", new HttpServerCodec());
+		// Protect against the slowaris attack
+		pipeline.addLast("readtimeout", new ReadTimeoutHandler(30));
 		// Support up to 8K of incoming data and handle 100-CONTINUE:
 		pipeline.addLast("dechunker", new HttpObjectAggregator(8 * 1024));
 		// Compress data for less data usage
