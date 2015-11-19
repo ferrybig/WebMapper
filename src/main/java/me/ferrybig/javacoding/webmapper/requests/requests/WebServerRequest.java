@@ -8,19 +8,17 @@ package me.ferrybig.javacoding.webmapper.requests.requests;
 import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.Listener;
 import me.ferrybig.javacoding.webmapper.Server;
+import me.ferrybig.javacoding.webmapper.session.DataStorage;
 import me.ferrybig.javacoding.webmapper.session.PermissionManager;
 import me.ferrybig.javacoding.webmapper.session.Session;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import io.netty.channel.ChannelHandlerContext;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
 
 /**
  *
  * @author Fernando
  */
-public interface WebServerRequest {
+public interface WebServerRequest extends DataStorage {
 	public String getEndpoint();
 	
 	public default String endpoint() {
@@ -33,31 +31,6 @@ public interface WebServerRequest {
 	}
 	
 	public void setEndpoint(String endpoint);
-	
-	public void setData(Collection<?> data);
-	
-	public default void setData(Object data) {
-		setData(Collections.singletonList(data));
-	}
-	
-	public default WebServerRequest setDataOrClear(Object data) {
-		if(data == null)
-			setData(Collections.emptyList());
-		else
-			setData(data);
-		return this;
-	}
-	
-	public Collection<?> getData();
-	
-	public default <T> Optional<T> getDataAs(Class<T> type) {
-		return getData().stream().filter((v) -> (type.isAssignableFrom(v.getClass()))).map(type::cast).findAny();
-	}
-	
-	public default boolean hasData(Class<?> type) {
-		return getData().stream().anyMatch((v) -> (type.isAssignableFrom(v.getClass())));
-	}
-	
 	
 	public Listener getListener();
 	

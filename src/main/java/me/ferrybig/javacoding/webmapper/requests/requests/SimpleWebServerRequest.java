@@ -7,6 +7,7 @@ package me.ferrybig.javacoding.webmapper.requests.requests;
 
 import me.ferrybig.javacoding.webmapper.Listener;
 import me.ferrybig.javacoding.webmapper.Server;
+import me.ferrybig.javacoding.webmapper.session.DefaultDataStorage;
 import me.ferrybig.javacoding.webmapper.session.Session;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.Collection;
@@ -19,7 +20,7 @@ import java.util.Objects;
  *
  * @author Fernando
  */
-public class SimpleWebServerRequest implements WebServerRequest {
+public class SimpleWebServerRequest extends DefaultDataStorage implements WebServerRequest {
 	private String endpoint;
 	
 	private final ChannelHandlerContext context;
@@ -27,8 +28,6 @@ public class SimpleWebServerRequest implements WebServerRequest {
 	private final Server server;
 	
 	private final Listener port;
-	
-	private final List<Object> data;
 	
 	private SessionSupplier sessionsuplier;
 	
@@ -39,12 +38,12 @@ public class SimpleWebServerRequest implements WebServerRequest {
 
 	public SimpleWebServerRequest(String endpoint, ChannelHandlerContext context,
 			SessionSupplier sessionsuplier, Server server, Listener port, List<Object> data) {
+		super(data);
 		this.endpoint = Objects.requireNonNull(endpoint, "endpoint == null");
 		this.sessionsuplier = Objects.requireNonNull(sessionsuplier, "sessionsuplier == null");
 		this.context = Objects.requireNonNull(context, "context == null");
 		this.server = Objects.requireNonNull(server, "server == null");
 		this.port = Objects.requireNonNull(port, "port == null");
-		this.data = new LinkedList<>(data);
 	}
 
 	@Override
@@ -97,15 +96,4 @@ public class SimpleWebServerRequest implements WebServerRequest {
 		this.sessionsuplier = Objects.requireNonNull(sessionsuplier, "sessionsuplier == null");
 	}
 
-	@Override
-	public void setData(Collection<?> data) {
-		this.data.clear();
-		this.data.addAll(data);
-	}
-
-	@Override
-	public Collection<?> getData() {
-		return this.data;
-	}
-	
 }
