@@ -93,7 +93,7 @@
 				<configuration>
 					<!-- the following is set to false so we can test without git commits -->
 					<doCheck>false</doCheck>
-					<doUpdate>true</doUpdate>
+					<doUpdate>false</doUpdate>
 				</configuration>
 			</plugin>
 			<plugin>
