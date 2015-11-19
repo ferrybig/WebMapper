@@ -64,6 +64,18 @@
 				<configuration>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
+					<compilerVersion>${jdk.version}</compilerVersion>
+					<fork>true</fork>
+					<debug>true</debug>
+					<optimize>true</optimize>
+					<showDeprecation>true</showDeprecation>
+					<showWarnings>true</showWarnings>
+					<compilerArgument>-Xlint:-options</compilerArgument>
+					<meminitial>128m</meminitial>
+					<maxmem>1024m</maxmem>
+					<excludes>
+						<exclude>**/package-info.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -82,7 +94,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.3</version>
 				<executions>
 					<!-- Run shade goal on package phase -->
 					<execution>
@@ -94,6 +105,7 @@
 							<transformers>
 								<!-- add Main-Class to manifest file -->
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>${main.class}</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>
