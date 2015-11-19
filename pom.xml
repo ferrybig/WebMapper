@@ -30,7 +30,7 @@
 		</developer>
 	</developers>
 	<build>
-		<finalName>${project.artifactId}-${project.version}</finalName>
+		<finalName>${project.artifactId}-${project.version}-r${buildNumber}</finalName>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<directory>target</directory>
