@@ -90,10 +90,16 @@
 						</goals>
 					 </execution>
 				</executions>
+				<configuration>
+					<!-- the following is set to false so we can test without git commits -->
+					<doCheck>false</doCheck>
+					<doUpdate>true</doUpdate>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
 				<executions>
 					<!-- Run shade goal on package phase -->
 					<execution>
