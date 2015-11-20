@@ -50,4 +50,12 @@ public class StreamException extends RuntimeException {
 		this(cause.toString());
         this.initCause(cause);
 	}
+	
+	public <T extends Throwable> void rethrowIfCauseInstanceOf(Class<T> type) throws T {
+		if(this.getCause() != null) {
+			if(type.isAssignableFrom(this.getCause().getClass())) {
+				throw type.cast(this.getCause());
+			}
+		}
+	}
 }
