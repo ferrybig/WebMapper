@@ -13,5 +13,5 @@ import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
  * @author Fernando
  */
 public interface RequestMapper {
-	public EndpointResult handleHttpRequest(WebServerRequest req);
+	public EndpointResult<?> handleHttpRequest(WebServerRequest req);
 }

@@ -29,7 +29,7 @@ public class NoPermissionRoute implements RequestMapper {
 	}
 	
 	@Override
-	public EndpointResult handleHttpRequest(WebServerRequest req) {
+	public EndpointResult<?> handleHttpRequest(WebServerRequest req) {
 		return returnData;
 	}
 	
