@@ -9,8 +9,11 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -32,6 +35,8 @@ public class DefaultSession implements Session {
 	private final SessionManager creator;
 	
 	private final PermissionManager permissionManager;
+	
+	private final Map<String, DataStorage> data = new HashMap<>(); 
 	
 	public DefaultSession(String key, SessionManager creator, PermissionManager permissionManager) {
 		this.key = Objects.requireNonNull(key, "key == null");
@@ -105,6 +110,20 @@ public class DefaultSession implements Session {
 		}
 		return true;
 	}
-	
+
+	@Override
+	public Map<String, ? extends DataStorage> getKnownData() {
+		return this.data;
+	}
+
+	@Override
+	public void setMultipleData(String key, Collection<?> data) {
+		this.data.put(key, new DefaultDataStorage(data));
+	}
+
+	@Override
+	public boolean deleteData(String key) {
+		return this.data.remove(key) != null;
+	}
 	
 }

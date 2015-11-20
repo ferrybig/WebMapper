@@ -7,7 +7,10 @@ package me.ferrybig.javacoding.webmapper.session;
 
 import java.net.InetAddress;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,5 +38,23 @@ public interface Session {
 	public Instant getExpireDate();
 	
 	public void setExpireDate(Instant date);
+
+	public Map<String, ? extends DataStorage> getKnownData();
+
+	public default <T> Optional<T> getData(String key, Class<T> type) {
+		return getData(key).flatMap(d->d.getDataAs(type));
+	}
+	
+	public default Optional<DataStorage> getData(String key) {
+		return Optional.ofNullable(getKnownData().get(key));
+	}
+	
+	public default void setData(String key, Object data) {
+		setMultipleData(key, Collections.singleton(data));
+	}
+	
+	public void setMultipleData(String key, Collection<?> data);
+	
+	public boolean deleteData(String key);
 
 }
