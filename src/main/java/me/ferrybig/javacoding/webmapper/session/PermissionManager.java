@@ -5,6 +5,7 @@
  */
 package me.ferrybig.javacoding.webmapper.session;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -15,6 +16,10 @@ public interface PermissionManager {
 	public Set<Permission> getPermissionsForLevel(PermissionLevel level);
 	
 	public Permission registerPermission(Permission permission);
+	
+	public default Permission registerPermission(String permission, PermissionLevel miniumLevel) {
+		return registerPermission(new DefaultPermission(permission, EnumSet.complementOf(EnumSet.copyOf(miniumLevel.getFullParentsAndMe()))));
+	}
 	
 	public Permission unregisterPermission(Permission permission);
 }
