@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper.requests.requests;
 
 import me.ferrybig.javacoding.webmapper.session.Session;
+import me.ferrybig.javacoding.webmapper.util.LazyObjectCreator;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -15,24 +16,20 @@ import java.util.function.Supplier;
  */
 public class LazySessionSupplier implements SessionSupplier {
 
-	private Session session;
-	private final Supplier<Session> sessionFactory;
+	private final LazyObjectCreator<Session> session;
 
 	public LazySessionSupplier(Supplier<Session> sessionFactory) {
-		this.sessionFactory = Objects.requireNonNull(sessionFactory, "sessionFactory == null");
+		this.session = new LazyObjectCreator<>(Objects.requireNonNull(sessionFactory, "sessionFactory == null"));
 	}
 	
 	@Override
 	public Session getSession() {
-		if(session == null) {
-			session = sessionFactory.get();
-		}
-		return session;
+		return session.get();
 	}
 
 	@Override
 	public boolean hasTouchedSession() {
-		return session != null;
+		return session.has();
 	}
 	
 }
