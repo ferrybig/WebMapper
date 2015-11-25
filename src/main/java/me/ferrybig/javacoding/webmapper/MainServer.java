@@ -61,7 +61,7 @@ public class MainServer implements Server {
 		this.permissions = permissions;
 		this.mapper = mapper;
 		this.b = new ServerBootstrap();
-		
+		b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
 	}
 
 	@Override
@@ -78,8 +78,7 @@ public class MainServer implements Server {
 			} else {
 				init = new WebServerInitializer(this, sessions, mapper, listener);
 			}
-			b.group(bossGroup, workerGroup)
-					.channel(NioServerSocketChannel.class)
+			b
 					.handler(new LoggingHandler(this.getClass(), LogLevel.INFO))
 					.childHandler(init);
 			ChannelFuture f;
