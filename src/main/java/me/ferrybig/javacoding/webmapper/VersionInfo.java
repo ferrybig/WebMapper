@@ -52,10 +52,6 @@ public class VersionInfo {
 	public static String getArtifactId() {
 		return getInstance0().artifactId;
 	}
-
-	public static String getVersion0() {
-		return getInstance0().version;
-	}
 	
 	public static String getVersion() {
 		return getInstance0().version;
