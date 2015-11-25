@@ -7,10 +7,12 @@ package me.ferrybig.javacoding.webmapper;
 
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
+import me.ferrybig.javacoding.webmapper.exceptions.ServerException;
 import me.ferrybig.javacoding.webmapper.netty.WebServerInitializer;
 import me.ferrybig.javacoding.webmapper.netty.WebSslServerInitializer;
 import me.ferrybig.javacoding.webmapper.session.PermissionManager;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
+import me.ferrybig.javacoding.webmapper.util.StreamUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -23,16 +25,20 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import io.netty.util.concurrent.Future;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import javax.net.ssl.SSLException;
 
 /**
@@ -104,6 +110,19 @@ public class MainServer implements Server {
 	@Override
 	public PermissionManager getPermissions() {
 		return permissions;
+	}
+
+	public void shutdown() throws ServerException {
+		List<Throwable> exception = new LinkedList<>();
+		this.listeners.values().stream().map(Channel::close).peek(ChannelFuture::awaitUninterruptibly).
+				map(ChannelFuture::cause).filter(Objects::nonNull).forEach(exception::add);
+		Stream.of(bossGroup.shutdownGracefully(), workerGroup.shutdownGracefully()).peek(Future::awaitUninterruptibly).
+				map(Future::cause).filter(Objects::nonNull).forEach(exception::add);
+		if(!exception.isEmpty()) {
+			ServerException main = new ServerException("Unable to shutdown properly");
+			exception.forEach(main::addSuppressed);
+			throw main;
+		}
 	}
 	
 }
