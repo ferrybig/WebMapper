@@ -18,7 +18,7 @@ public interface PermissionManager {
 	public Permission registerPermission(Permission permission);
 	
 	public default Permission registerPermission(String permission, PermissionLevel miniumLevel) {
-		return registerPermission(new DefaultPermission(permission, EnumSet.complementOf(EnumSet.copyOf(miniumLevel.getFullParentsAndMe()))));
+		return registerPermission(new DefaultPermission(permission, miniumLevel.getFullChildrenAndMe()));
 	}
 	
 	public Permission unregisterPermission(Permission permission);
