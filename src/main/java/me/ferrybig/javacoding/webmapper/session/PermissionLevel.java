@@ -46,12 +46,13 @@ public enum PermissionLevel {
 	ADMIN(CONTENT_EDITOR),;
 	private Set<PermissionLevel> parents;
 	private Set<PermissionLevel> fullParents;
-	private Set<PermissionLevel> fullParentAndMe;
+	private Set<PermissionLevel> fullParentsAndMe;
+	public Set<PermissionLevel> fullChildrenAndMe;
 
 	@SuppressWarnings("LeakingThisInConstructor")
 	private PermissionLevel() {
 		this.fullParents = this.parents = Collections.emptySet();
-		this.fullParentAndMe = Collections.singleton(this);
+		this.fullParentsAndMe = Collections.singleton(this);
 	}
 
 	@SuppressWarnings("LeakingThisInConstructor")
@@ -62,7 +63,7 @@ public enum PermissionLevel {
 				collect(Collectors.toCollection(HashSet::new)));
 		Set<PermissionLevel> tmp = new HashSet<>(fullParents);
 		tmp.add(this);
-		this.fullParentAndMe = Collections.unmodifiableSet(tmp);
+		this.fullParentsAndMe = Collections.unmodifiableSet(tmp);
 	}
 
 	static {
@@ -71,8 +72,11 @@ public enum PermissionLevel {
 					? EnumSet.noneOf(PermissionLevel.class) : EnumSet.copyOf(v.parents));
 			v.fullParents = Collections.unmodifiableSet(v.fullParents.isEmpty()
 					? EnumSet.noneOf(PermissionLevel.class) : EnumSet.copyOf(v.fullParents));
-			v.fullParentAndMe = Collections.unmodifiableSet(v.fullParentAndMe.isEmpty()
-					? EnumSet.noneOf(PermissionLevel.class) : EnumSet.copyOf(v.fullParentAndMe));
+			v.fullParentsAndMe = Collections.unmodifiableSet(v.fullParentsAndMe.isEmpty()
+					? EnumSet.noneOf(PermissionLevel.class) : EnumSet.copyOf(v.fullParentsAndMe));
+			Set<PermissionLevel> fullChildrenAndMe = EnumSet.allOf(PermissionLevel.class);
+			fullChildrenAndMe.removeAll(v.fullParents);
+			v.fullChildrenAndMe = Collections.unmodifiableSet(fullChildrenAndMe);
 		}
 	}
 
@@ -85,7 +89,11 @@ public enum PermissionLevel {
 	}
 
 	public Set<PermissionLevel> getFullParentsAndMe() {
-		return fullParentAndMe;
+		return fullParentsAndMe;
+	}
+
+	public Set<PermissionLevel> getFullChildrenAndMe() {
+		return fullChildrenAndMe;
 	}
 
 }
