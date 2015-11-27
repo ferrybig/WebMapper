@@ -39,6 +39,9 @@ public interface DataStorage {
 	public Collection<?> getData();
 	
 	public default <T> Optional<T> getDataAs(Class<T> type) {
+		Optional<T> exact =  getData().stream().filter(v->v.getClass().equals(type)).map(type::cast).findAny();
+		if(exact.isPresent())
+			return exact;
 		return getData().stream().filter((v) -> (type.isAssignableFrom(v.getClass()))).map(type::cast).findAny();
 	}
 	

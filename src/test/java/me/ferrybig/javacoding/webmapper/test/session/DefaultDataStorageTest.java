@@ -70,7 +70,6 @@ public class DefaultDataStorageTest {
 		assertEquals("string", extr(data.getDataAs(String.class)));
 	}
 
-	@Ignore("Currently broken, but we only give setdata 1 object at a time in production")
 	@Test
 	public void getDataReturnsBestType() {
 		Object r = new Object();
