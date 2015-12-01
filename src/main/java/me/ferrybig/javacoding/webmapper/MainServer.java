@@ -40,8 +40,9 @@ import javax.net.ssl.SSLException;
  */
 public class MainServer implements Server {
 
-	private final EventLoopGroup bossGroup = new NioEventLoopGroup(2);
-	private final EventLoopGroup workerGroup = new NioEventLoopGroup();
+	private final EventLoopGroup bossGroup;
+	private final EventLoopGroup workerGroup;
+	private final boolean shouldCloseGroups;
 	private final Map<Listener, Channel> listeners = new HashMap<>();
 	private final ServerBootstrap b;
 	private final PermissionManager permissions;
@@ -49,12 +50,25 @@ public class MainServer implements Server {
 	private static final Logger LOGGER = Logger.getLogger(MainServer.class.getName());
 	private final SessionManager sessions;
 	private boolean closed = false;
-
+	
 	public MainServer(SessionManager sessions, PermissionManager permissions, RequestMapper mapper) {
+		this(new NioEventLoopGroup(2), new NioEventLoopGroup(), true, sessions, permissions, mapper);
+	}
+
+	public MainServer(EventLoopGroup bossGroup, EventLoopGroup workerGroup,
+			SessionManager sessions, PermissionManager permissions, RequestMapper mapper) {
+		this(bossGroup, workerGroup, false, sessions, permissions, mapper);
+	}
+	
+	private MainServer(EventLoopGroup bossGroup, EventLoopGroup workerGroup, boolean shouldCloseGroups,
+			SessionManager sessions, PermissionManager permissions, RequestMapper mapper) {
+		this.shouldCloseGroups = shouldCloseGroups;
 		this.sessions = sessions;
 		this.permissions = permissions;
 		this.mapper = mapper;
 		this.b = new ServerBootstrap();
+		this.bossGroup = bossGroup;
+		this.workerGroup = workerGroup;
 		b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
 	}
 
@@ -112,6 +126,9 @@ public class MainServer implements Server {
 			else
 				f = b.bind(host, port);
 			Channel ch = f.sync().channel();
+			if(f.cause() != null) {
+				throw new ListenerException("Unable to bind listener", f.cause());
+			}
 			LOGGER.log(Level.INFO, "Started listener on: {0}", listener.toURL());
 			this.listeners.put(listener, ch);
 			return listener;
@@ -151,10 +168,12 @@ public class MainServer implements Server {
 			closed = true;
 			this.listeners.values().stream().map(Channel::close).peek(ChannelFuture::awaitUninterruptibly).
 					map(ChannelFuture::cause).filter(Objects::nonNull).forEach(exception::add);
-			Stream.of(bossGroup.shutdownGracefully(), workerGroup.shutdownGracefully()).peek(Future::awaitUninterruptibly).
-					map(Future::cause).filter(Objects::nonNull).forEach(exception::add);
+			if (shouldCloseGroups) {
+				Stream.of(bossGroup.shutdownGracefully(), workerGroup.shutdownGracefully()).peek(Future::awaitUninterruptibly).
+						map(Future::cause).filter(Objects::nonNull).forEach(exception::add);
+			}
 		}
-		if(!exception.isEmpty()) {
+		if (!exception.isEmpty()) {
 			ServerException main = new ServerException("Unable to shutdown properly");
 			exception.forEach(main::addSuppressed);
 			throw main;
