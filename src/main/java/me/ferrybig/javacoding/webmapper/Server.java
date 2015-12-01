@@ -18,18 +18,18 @@ import java.util.Set;
  */
 public interface Server {
 	
-	Listener addListener(String host, int port, File privateKey, File publicKey, String pass) throws ListenerException;
+	public Listener addListener(String host, int port, File privateKey, File publicKey, String pass) throws ListenerException;
 	
-	Listener addListener(String host, int port, File privateKey, File publicKey) throws ListenerException;
+	public Listener addListener(String host, int port, File privateKey, File publicKey) throws ListenerException;
 	
-	Listener addListener(String host, int port) throws ListenerException;
+	public Listener addListener(String host, int port) throws ListenerException;
 
 	@Deprecated
-	Listener addListener(String host, int port, SslContext sslCtx) throws ListenerException;
+	public Listener addListener(String host, int port, SslContext sslCtx) throws ListenerException;
 
-	Set<Listener> getListeners();
+	public Set<Listener> getListeners();
 
-	PermissionManager getPermissions();
+	public PermissionManager getPermissions();
 
 	SessionManager getSessions();
 	
