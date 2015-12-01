@@ -7,6 +7,7 @@ package me.ferrybig.javacoding.webmapper.requests;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
+import static me.ferrybig.javacoding.webmapper.util.URLEncoder.encode;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.logging.Level;
@@ -38,7 +39,7 @@ public class LoggingRoute implements RequestMapper {
 			remoteNiceStr = remote.toString();
 		}
 		String type = (req.hasData() ? "DATA" : "GET");
-		LOGGER.log(level, "{0} {1} {2} {3}", new Object[]{remoteNiceStr, type, req.endpoint(), res.getResult()});
+		LOGGER.log(level, "{0} {1} {2} {3}", new Object[]{remoteNiceStr, type, encode(req.endpoint()), res.getResult()});
 		return res;
 	}
 }
