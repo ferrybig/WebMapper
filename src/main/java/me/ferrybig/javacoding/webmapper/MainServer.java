@@ -48,6 +48,7 @@ public class MainServer implements Server {
 	private final RequestMapper mapper;
 	private static final Logger LOGGER = Logger.getLogger(MainServer.class.getName());
 	private final SessionManager sessions;
+	private boolean closed = false;
 
 	public MainServer(SessionManager sessions, PermissionManager permissions, RequestMapper mapper) {
 		this.sessions = sessions;
@@ -135,12 +136,24 @@ public class MainServer implements Server {
 		return permissions;
 	}
 
+	@Deprecated
 	public void shutdown() throws ServerException {
+		close();
+	}
+	
+	@Override
+	public void close() throws ServerException {
 		List<Throwable> exception = new LinkedList<>();
-		this.listeners.values().stream().map(Channel::close).peek(ChannelFuture::awaitUninterruptibly).
-				map(ChannelFuture::cause).filter(Objects::nonNull).forEach(exception::add);
-		Stream.of(bossGroup.shutdownGracefully(), workerGroup.shutdownGracefully()).peek(Future::awaitUninterruptibly).
-				map(Future::cause).filter(Objects::nonNull).forEach(exception::add);
+		synchronized (this) {
+			if (closed) {
+				return;
+			}
+			closed = true;
+			this.listeners.values().stream().map(Channel::close).peek(ChannelFuture::awaitUninterruptibly).
+					map(ChannelFuture::cause).filter(Objects::nonNull).forEach(exception::add);
+			Stream.of(bossGroup.shutdownGracefully(), workerGroup.shutdownGracefully()).peek(Future::awaitUninterruptibly).
+					map(Future::cause).filter(Objects::nonNull).forEach(exception::add);
+		}
 		if(!exception.isEmpty()) {
 			ServerException main = new ServerException("Unable to shutdown properly");
 			exception.forEach(main::addSuppressed);
@@ -148,6 +161,9 @@ public class MainServer implements Server {
 		}
 	}
 
-	
+	@Override
+	public boolean isClosed() {
+		return closed;
+	}
 	
 }

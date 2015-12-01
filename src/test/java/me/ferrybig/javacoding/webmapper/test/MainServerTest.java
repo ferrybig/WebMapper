@@ -24,13 +24,10 @@ public class MainServerTest {
 	public void canReadSSLCertTest() throws ListenerException, ServerException {
 		PermissionManager perm = new DefaultPermissionsManager();
 		SessionManager ses = new DefaultSessionManager(perm);
-		MainServer s = new MainServer(ses, perm, r->null);
-		try {
+		try (MainServer s = new MainServer(ses, perm, r->null)) {
 			s.addListener("127.24.54.230", 59684, 
 					new File(getClass().getResource("unsafe01.key").getFile()), 
 					new File(getClass().getResource("unsafe01.cert").getFile()));
-		} finally {
-			s.shutdown();
 		}
 	}
 }

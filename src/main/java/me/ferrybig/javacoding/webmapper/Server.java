@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper;
 
 import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
+import me.ferrybig.javacoding.webmapper.exceptions.ServerException;
 import me.ferrybig.javacoding.webmapper.session.PermissionManager;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import io.netty.handler.ssl.SslContext;
@@ -16,7 +17,7 @@ import java.util.Set;
  *
  * @author Fernando
  */
-public interface Server {
+public interface Server extends AutoCloseable {
 	
 	public Listener addListener(String host, int port, File privateKey, File publicKey, String pass) throws ListenerException;
 	
@@ -31,6 +32,11 @@ public interface Server {
 
 	public PermissionManager getPermissions();
 
-	SessionManager getSessions();
+	public SessionManager getSessions();
+	
+	@Override
+	public void close() throws ServerException;
+	
+	public boolean isClosed();
 	
 }
