@@ -12,6 +12,7 @@ import me.ferrybig.javacoding.webmapper.session.DataStorage;
 import me.ferrybig.javacoding.webmapper.session.PermissionManager;
 import me.ferrybig.javacoding.webmapper.session.Session;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
@@ -34,7 +35,7 @@ public interface WebServerRequest extends DataStorage {
 	
 	public Listener getListener();
 	
-	public ChannelHandlerContext getHandlerContext();
+	public Channel getChannel();
 	
 	
 	public Server getServer();
@@ -79,22 +80,15 @@ public interface WebServerRequest extends DataStorage {
 		
 		public boolean isDisconnected();
 		
-		public CallId getId();
+		public boolean sendMessage(EndpointResult<?> t);
 	}
 	
 	public interface FutureRequestListener {
-		public void onClose(CallId req);
+		public void onClose(FutureRequest future);
 		
-		public void onOpen(CallId req);
+		public void onOpen(FutureRequest future);
 		
-		public void onMessage(WebServerRequest req);
-		
-	}
-	
-	public interface CallId extends SessionSupplier {
-		public long getNumber();
-		
-		public ChannelHandlerContext getContext();
+		public void onMessage(WebServerRequest req, FutureRequest future);
 		
 	}
 }

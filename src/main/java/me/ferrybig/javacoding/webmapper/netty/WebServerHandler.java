@@ -105,7 +105,7 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 				WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
 			} else {
 				handshaker.handshake(ctx.channel(), req);
-				this.websocketTmp = new SimpleWebServerRequest(WEBSOCKET_PATH, ctx,
+				this.websocketTmp = new SimpleWebServerRequest(WEBSOCKET_PATH, ctx.channel(),
 						new LazySessionSupplier(sessions::createNewSession), server, listener);
 			}
 		} else {
@@ -139,7 +139,7 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 				}
 				final Optional<String> sessionId0 = sessionId;
 				final SessionSupplier t;
-				WebServerRequest request = new SimpleWebServerRequest(url, ctx,
+				WebServerRequest request = new SimpleWebServerRequest(url, ctx.channel(),
 						t = new LazySessionSupplier(()
 								-> sessions.findOrCreateSession(sessionId0)), server, listener,
 						decodeRequest(Optional.ofNullable(req.headers().get(CONTENT_TYPE)), req.content()).

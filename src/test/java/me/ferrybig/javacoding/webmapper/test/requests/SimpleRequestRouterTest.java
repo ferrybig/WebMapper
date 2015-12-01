@@ -10,19 +10,13 @@ import me.ferrybig.javacoding.webmapper.test.empty.EmptyServer;
 import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.Listener;
 import me.ferrybig.javacoding.webmapper.Server;
-import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
-import me.ferrybig.javacoding.webmapper.session.Session;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.requests.SimpleRequestRouter;
 import me.ferrybig.javacoding.webmapper.requests.requests.SessionSupplier;
 import me.ferrybig.javacoding.webmapper.requests.requests.SimpleWebServerRequest;
 import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
-import me.ferrybig.javacoding.webmapper.session.PermissionManager;
-import me.ferrybig.javacoding.webmapper.session.SessionManager;
-import me.ferrybig.javacoding.webmapper.test.empty.EmptyChannelHandlerContext;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.ssl.SslContext;
-import java.util.Set;
+import me.ferrybig.javacoding.webmapper.test.empty.EmptyChannel;
+import io.netty.channel.Channel;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -43,7 +37,7 @@ public class SimpleRequestRouterTest {
 	};
 	private static final Server emptyServer = new EmptyServer();
 	private static final Listener listener = new Listener("127.0.0.1", 80, false);
-	private static final ChannelHandlerContext emptycontext = new EmptyChannelHandlerContext();
+	private static final Channel emptycontext = EmptyChannel.INSTANCE;
 	private static final SessionSupplier emptysessionSupplier = new EmptySessionSupplier();
 
 	@Test

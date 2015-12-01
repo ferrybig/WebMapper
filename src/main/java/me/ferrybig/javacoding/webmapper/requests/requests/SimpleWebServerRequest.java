@@ -9,10 +9,8 @@ import me.ferrybig.javacoding.webmapper.Listener;
 import me.ferrybig.javacoding.webmapper.Server;
 import me.ferrybig.javacoding.webmapper.session.DefaultDataStorage;
 import me.ferrybig.javacoding.webmapper.session.Session;
-import io.netty.channel.ChannelHandlerContext;
-import java.util.Collection;
+import io.netty.channel.Channel;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +21,7 @@ import java.util.Objects;
 public class SimpleWebServerRequest extends DefaultDataStorage implements WebServerRequest {
 	private String endpoint;
 	
-	private final ChannelHandlerContext context;
+	private final Channel context;
 	
 	private final Server server;
 	
@@ -31,12 +29,12 @@ public class SimpleWebServerRequest extends DefaultDataStorage implements WebSer
 	
 	private SessionSupplier sessionsuplier;
 	
-	public SimpleWebServerRequest(String endpoint, ChannelHandlerContext context,
+	public SimpleWebServerRequest(String endpoint, Channel context,
 			SessionSupplier sessionsuplier, Server server, Listener port) {
 		this(endpoint, context, sessionsuplier, server, port, Collections.emptyList());
 	}
 
-	public SimpleWebServerRequest(String endpoint, ChannelHandlerContext context,
+	public SimpleWebServerRequest(String endpoint, Channel context,
 			SessionSupplier sessionsuplier, Server server, Listener port, List<Object> data) {
 		super(data);
 		this.endpoint = Objects.requireNonNull(endpoint, "endpoint == null");
@@ -62,7 +60,7 @@ public class SimpleWebServerRequest extends DefaultDataStorage implements WebSer
 	}
 
 	@Override
-	public ChannelHandlerContext getHandlerContext() {
+	public Channel getChannel() {
 		return context;
 	}
 
