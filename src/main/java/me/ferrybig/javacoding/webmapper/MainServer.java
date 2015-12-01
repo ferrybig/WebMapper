@@ -78,9 +78,7 @@ public class MainServer implements Server {
 			} else {
 				init = new WebServerInitializer(this, sessions, mapper, listener);
 			}
-			b
-					.handler(new LoggingHandler(this.getClass(), LogLevel.INFO))
-					.childHandler(init);
+			b.childHandler(init);
 			ChannelFuture f;
 			if(listener.getHost() == null)
 				f = b.bind(port);
