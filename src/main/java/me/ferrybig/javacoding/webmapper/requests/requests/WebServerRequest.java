@@ -77,6 +77,8 @@ public interface WebServerRequest extends DataStorage {
 		
 		public boolean isClosed();
 		
+		public boolean isDisconnected();
+		
 		public CallId getId();
 	}
 	
