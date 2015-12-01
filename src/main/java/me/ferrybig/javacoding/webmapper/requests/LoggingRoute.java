@@ -34,7 +34,7 @@ public class LoggingRoute implements RequestMapper {
 		String remoteNiceStr;
 		if (remote instanceof InetSocketAddress) {
 			InetSocketAddress inetSocketAddress = (InetSocketAddress) remote;
-			remoteNiceStr = "[" + inetSocketAddress.getAddress() + "]:" + inetSocketAddress.getPort();
+			remoteNiceStr = "[" + inetSocketAddress.getAddress().getHostAddress() + "]:" + inetSocketAddress.getPort();
 		} else {
 			remoteNiceStr = remote.toString();
 		}
