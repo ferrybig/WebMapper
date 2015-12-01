@@ -9,6 +9,7 @@ import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
 import me.ferrybig.javacoding.webmapper.session.PermissionManager;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
 import io.netty.handler.ssl.SslContext;
+import java.io.File;
 import java.util.Set;
 
 /**
@@ -16,7 +17,14 @@ import java.util.Set;
  * @author Fernando
  */
 public interface Server {
+	
+	Listener addListener(String host, int port, File privateKey, File publicKey, String pass) throws ListenerException;
+	
+	Listener addListener(String host, int port, File privateKey, File publicKey) throws ListenerException;
+	
+	Listener addListener(String host, int port) throws ListenerException;
 
+	@Deprecated
 	Listener addListener(String host, int port, SslContext sslCtx) throws ListenerException;
 
 	Set<Listener> getListeners();

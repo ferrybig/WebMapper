@@ -12,23 +12,16 @@ import me.ferrybig.javacoding.webmapper.netty.WebServerInitializer;
 import me.ferrybig.javacoding.webmapper.netty.WebSslServerInitializer;
 import me.ferrybig.javacoding.webmapper.session.PermissionManager;
 import me.ferrybig.javacoding.webmapper.session.SessionManager;
-import me.ferrybig.javacoding.webmapper.util.StreamUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.SslProvider;
-import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.concurrent.Future;
-import java.io.IOException;
-import java.security.cert.CertificateException;
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -65,7 +58,40 @@ public class MainServer implements Server {
 	}
 
 	@Override
-	public synchronized Listener addListener(String host, int port, SslContext sslCtx) throws ListenerException {
+	public Listener addListener(String host, int port, File privateKey, 
+			File publicKey, String pass)throws ListenerException {
+		try {
+			return this.addListener0(host, port, 
+					SslContextBuilder.forServer(publicKey, privateKey, pass).build());
+		} catch (SSLException ex) {
+			throw new ListenerException("Unable to add listener because of ssl problem", ex);
+		}
+	}
+
+	@Override
+	public Listener addListener(String host, int port, File privateKey, 
+			File publicKey) throws ListenerException {
+		try {
+			return this.addListener0(host, port, 
+					SslContextBuilder.forServer(publicKey, privateKey).build());
+		} catch (SSLException ex) {
+			throw new ListenerException("Unable to add listener because of ssl problem", ex);
+		}
+	}
+
+	@Override
+	public Listener addListener(String host, int port) throws ListenerException {
+		return this.addListener0(host, port, null);
+	}
+	
+	@Override
+	@Deprecated
+	public Listener addListener(String host, int port, SslContext sslCtx) 
+			throws ListenerException {
+		return this.addListener0(host, port, sslCtx);
+	}
+	
+	private synchronized Listener addListener0(String host, int port, SslContext sslCtx) throws ListenerException {
 		try {
 			Listener listener = new Listener(host, port, sslCtx != null);
 			if (this.listeners.containsKey(listener)) {
@@ -121,5 +147,7 @@ public class MainServer implements Server {
 			throw main;
 		}
 	}
+
+	
 	
 }

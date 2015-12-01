@@ -35,7 +35,7 @@ public class SimpleRequestRouterTest {
 		fail();
 		throw new AssertionError();
 	};
-	private static final Server emptyServer = new EmptyServer();
+	private static final Server emptyServer = EmptyServer.INSTANCE;
 	private static final Listener listener = new Listener("127.0.0.1", 80, false);
 	private static final Channel emptycontext = EmptyChannel.INSTANCE;
 	private static final SessionSupplier emptysessionSupplier = new EmptySessionSupplier();

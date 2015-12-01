@@ -27,7 +27,7 @@ public class SimpleWebServerRequestTest {
 		req = new SimpleWebServerRequest("",
 				EmptyChannel.INSTANCE,
 				new EmptySessionSupplier(),
-				new EmptyServer(),
+				EmptyServer.INSTANCE,
 				new Listener("127.0.0.1", 80, false));
 	}
 

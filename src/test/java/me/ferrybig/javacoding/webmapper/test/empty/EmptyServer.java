@@ -5,41 +5,22 @@
  */
 package me.ferrybig.javacoding.webmapper.test.empty;
 
-import me.ferrybig.javacoding.webmapper.Listener;
 import me.ferrybig.javacoding.webmapper.Server;
-import me.ferrybig.javacoding.webmapper.exceptions.ListenerException;
-import me.ferrybig.javacoding.webmapper.session.PermissionManager;
-import me.ferrybig.javacoding.webmapper.session.SessionManager;
-import io.netty.handler.ssl.SslContext;
-import java.util.Set;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 /**
  *
  * @author Fernando
  */
-public class EmptyServer implements Server {
+public class EmptyServer{
 
-	public EmptyServer() {
+	private EmptyServer() {
 	}
-
-	@Override
-	public Listener addListener(String host, int port, SslContext ssl) throws ListenerException {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public Set<Listener> getListeners() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public PermissionManager getPermissions() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public SessionManager getSessions() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
+	
+	public final static Server INSTANCE = (Server) Proxy.newProxyInstance(EmptyServer.class.getClassLoader(), 
+			new Class<?>[]{Server.class}, (Object proxy, Method method, Object[] args) -> {
+				throw new UnsupportedOperationException("Not supported yet.");
+	});
 	
 }
