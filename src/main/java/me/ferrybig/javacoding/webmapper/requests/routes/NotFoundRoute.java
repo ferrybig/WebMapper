@@ -18,7 +18,7 @@ public class NotFoundRoute implements RequestMapper {
 
 	public static final NotFoundRoute JSON = new NotFoundRoute(new JSONObject(), EndpointResult.ContentType.JSON);
 	
-	public static final NotFoundRoute TEXT = new NotFoundRoute("No permissions", EndpointResult.ContentType.TEXT);
+	public static final NotFoundRoute TEXT = new NotFoundRoute("Error: Not Found", EndpointResult.ContentType.TEXT);
 	
 	private final EndpointResult<?> returnData;
 	
