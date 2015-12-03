@@ -12,6 +12,7 @@ import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
  *
  * @author Fernando
  */
+@FunctionalInterface
 public interface RequestMapper {
 	public EndpointResult<?> handleHttpRequest(WebServerRequest req);
 }
