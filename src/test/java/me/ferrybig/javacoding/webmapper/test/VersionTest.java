@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper.test;
 
 import me.ferrybig.javacoding.webmapper.VersionInfo;
+import java.util.Date;
 import static org.junit.Assert.*;
 import org.junit.Test;
 /**
@@ -14,30 +15,61 @@ import org.junit.Test;
  */
 public class VersionTest {
 	@Test
-	public void gitshaTest() {
-		String git = VersionInfo.getGitsha();
+	public void getCommitIdTest() {
+		String git = VersionInfo.getCommitId();
+		assertNotNull(git);
 		assertNotEquals(git, "");
-		assertNotEquals(git, "${buildNumber}");
 	}
 	
 	@Test
-	public void artifactTest() {
+	public void getArtifactIdTest() {
 		String artifact = VersionInfo.getArtifactId();
+		assertNotNull(artifact);
 		assertNotEquals(artifact, "");
-		assertNotEquals(artifact, "${project.artifactId}");
 	}
 	
 	@Test
-	public void groupidTest() {
+	public void getGroupIdTest() {
 		String groupid = VersionInfo.getGroupId();
+		assertNotNull(groupid);
 		assertNotEquals(groupid, "");
-		assertNotEquals(groupid, "${project.groupId}");
 	}
 	
 	@Test
-	public void versionTest() {
+	public void getVersionTest() {
 		String version = VersionInfo.getVersion();
+		assertNotNull(version);
 		assertNotEquals(version, "");
-		assertNotEquals(version, "${project.version}");
 	}
+	
+	@Test
+	public void getCommitTimeTest() {
+		Date date = VersionInfo.getCommitTime();
+		assertNotNull(date);
+	}
+	
+	@Test
+	public void getCommitIdAbbrTest() {
+		String version = VersionInfo.getCommitIdAbbrev();
+		assertNotNull(version);
+		assertNotEquals(version, "");
+		assertTrue(VersionInfo.getCommitId().startsWith(version));
+	}
+	
+	@Test
+	public void getTagsTest() {
+		String version = VersionInfo.getTags();
+		assertNotNull(version);
+	}
+	
+	@Test
+	public void getFullVersionTest() {
+		String version = VersionInfo.getFullVersion();
+		assertNotNull(version);
+		assertNotEquals(version, "");
+		assertTrue(version.contains(VersionInfo.getArtifactId()));
+		assertTrue(version.contains(VersionInfo.getVersion()));
+		assertTrue(version.contains(VersionInfo.getGroupId()));
+	}
+	
 }

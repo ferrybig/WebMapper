@@ -3,3 +3,7 @@
 /.idea/
 /*.iml
 /nbactions.xml
+/src/generated/java/
+!/src/generated/java/.keep
+/src/generated/resources/
+!/src/generated/resources/.keep

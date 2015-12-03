@@ -30,7 +30,7 @@
 		</developer>
 	</developers>
 	<build>
-		<finalName>${project.artifactId}-${project.version}-r${buildNumber}</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<directory>target</directory>
@@ -45,6 +45,12 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/generated/resources</directory>
+				<excludes>
+					<exclude>.keep</exclude>
+				</excludes>
 			</resource>
 		</resources>
 		<plugins>
@@ -79,21 +85,29 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.1</version>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<version>2.2.0</version>
 				<executions>
 					<execution>
-						<phase>validate</phase>
 						<goals>
-							<goal>create</goal>
+							<goal>revision</goal>
 						</goals>
-					 </execution>
+					</execution>
 				</executions>
 				<configuration>
-					<!-- the following is set to false so we can test without git commits -->
-					<doCheck>false</doCheck>
-					<doUpdate>false</doUpdate>
+					<commitIdGenerationMode>full</commitIdGenerationMode>
+					<includeOnlyProperties>
+						<includeOnlyProperty>^git.commit.id.full$</includeOnlyProperty>
+						<includeOnlyProperty>^git.commit.id.abbrev$</includeOnlyProperty>
+						<includeOnlyProperty>^git.dirty$</includeOnlyProperty>
+						<includeOnlyProperty>^git.commit.time$</includeOnlyProperty>
+						<includeOnlyProperty>^git.tags$</includeOnlyProperty>
+					</includeOnlyProperties>
+					<dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
+					<dateFormatTimeZone>UTC</dateFormatTimeZone>
+					<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					<generateGitPropertiesFilename>src/generated/resources/git.properties</generateGitPropertiesFilename>
 				</configuration>
 			</plugin>
 			<plugin>
