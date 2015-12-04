@@ -17,7 +17,12 @@ import java.util.function.Supplier;
  */
 public class StreamExceptionWrapper {
 
+	@Deprecated
 	public static <T, U> Function<T, U> wrapEx(ExceptionFunction<T, U, ?> f) {
+		return function(f);
+	}
+	
+	public static <T, U> Function<T, U> function(ExceptionFunction<T, U, ?> f) {
 		return new Function<T, U>() {
 
 			@Override
@@ -34,7 +39,7 @@ public class StreamExceptionWrapper {
 		};
 	}
 
-	public static <T, S, U> BiFunction<T, S, U> wrapEx(ExceptionBiFunction<T, S, U, ?> f) {
+	public static <T, S, U> BiFunction<T, S, U> biFunction(ExceptionBiFunction<T, S, U, ?> f) {
 		return new BiFunction<T, S, U>() {
 
 			@Override
@@ -51,7 +56,7 @@ public class StreamExceptionWrapper {
 		};
 	}
 
-	public static <U> Supplier<U> wrapEx(ExceptionSupplier<U, ?> f) {
+	public static <U> Supplier<U> supplier(ExceptionSupplier<U, ?> f) {
 		return new Supplier<U>() {
 
 			@Override
@@ -68,7 +73,7 @@ public class StreamExceptionWrapper {
 		};
 	}
 
-	public static <U> Consumer<U> wrapEx(ExceptionConsumer<U, ?> f) {
+	public static <U> Consumer<U> consumer(ExceptionConsumer<U, ?> f) {
 		return new Consumer<U>() {
 
 			@Override
