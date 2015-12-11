@@ -30,6 +30,7 @@ public class LoggingRoute implements RequestMapper {
 
 	@Override
 	public EndpointResult<?> handleHttpRequest(WebServerRequest req) {
+		String endpoint = req.endpoint();
 		EndpointResult<?> res = upstream.handleHttpRequest(req);
 		SocketAddress remote = req.getChannel().remoteAddress();
 		String remoteNiceStr;
@@ -40,7 +41,7 @@ public class LoggingRoute implements RequestMapper {
 			remoteNiceStr = remote.toString();
 		}
 		String type = (req.hasData() ? "DATA" : "GET");
-		LOGGER.log(level, "{0} {1} {2} {3}", new Object[]{remoteNiceStr, type, encode(req.endpoint()), res.getResult()});
+		LOGGER.log(level, "{0} {1} {2} {3}", new Object[]{remoteNiceStr, type, encode(endpoint), res.getResult()});
 		return res;
 	}
 }
