@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper.util;
 
 import me.ferrybig.javacoding.webmapper.exceptions.StreamException;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -89,6 +90,23 @@ public class StreamExceptionWrapper {
 			}
 		};
 	}
+	
+	public static <U, U2> BiConsumer<U, U2> biConsumer(ExceptionBiConsumer<U, U2, ?> f) {
+		return new BiConsumer<U, U2>() {
+
+			@Override
+			public void accept(U u, U2 u2) {
+				try {
+					f.accept(u, u2);
+				} catch (Exception ex) {
+					if (ex instanceof RuntimeException) {
+						throw (RuntimeException) ex;
+					}
+					throw new StreamException(ex);
+				}
+			}
+		};
+	}
 
 	@FunctionalInterface
 	public interface ExceptionFunction<T, R, E extends Exception> {
@@ -100,6 +118,12 @@ public class StreamExceptionWrapper {
 	public interface ExceptionConsumer<T, E extends Exception> {
 
 		void accept(T t) throws E;
+	}
+	
+	@FunctionalInterface
+	public interface ExceptionBiConsumer<T, U, E extends Exception> {
+
+		void accept(T t, U o) throws E;
 	}
 
 	@FunctionalInterface
