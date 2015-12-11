@@ -1,88 +1,78 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ * To change this template level, choose Tools | Templates
  * and open the template in the editor.
  */
 package me.ferrybig.javacoding.webmapper.test.session;
 
 import me.ferrybig.javacoding.webmapper.session.PermissionLevel;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  *
  * @author Fernando
  */
+@RunWith(Parameterized.class)
 public class PermissionLevelTest {
 
+	@Parameters
+	public static Collection<Object[]> data() {
+		return Arrays.stream(PermissionLevel.values()).map(o -> new Object[]{o}).collect(Collectors.toList());
+	}
+	
+	@Parameter 
+    public PermissionLevel level;
+	
 	@Test
 	public void parentsNeverContainsItselfTest() {
-		for (PermissionLevel level : PermissionLevel.values()) {
-			assertFalse(level.getParents().contains(level));
-		}
+		assertFalse(level.getParents().contains(level));
 	}
 
 	@Test
 	public void fullParentsNeverContainsItselfTest() {
-		for (PermissionLevel level : PermissionLevel.values()) {
-			assertFalse(level.getFullParents().contains(level));
-		}
+		assertFalse(level.getFullParents().contains(level));
 	}
 
 	@Test
 	public void fullParentsAndMeContainsItselfTest() {
-		for (PermissionLevel level : PermissionLevel.values()) {
-			assertTrue(level.getFullParentsAndMe().contains(level));
-		}
+		assertTrue(level.getFullParentsAndMe().contains(level));
+	}
+
+	@Test
+	public void fullChildrenAndMeContainsItselfTest() {
+		assertTrue(level.getFullChildrenAndMe().contains(level));
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void noEditableParentsTest() {
-		for (PermissionLevel level : PermissionLevel.values()) {
-			try {
-				level.getParents().clear();
-				fail();
-			} catch (UnsupportedOperationException ex) {
-			}
-		}
-		throw new UnsupportedOperationException();
+		level.getParents().clear();
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void noEditableFullParentsTest() {
-		for (PermissionLevel level : PermissionLevel.values()) {
-			try {
-				level.getFullParents().clear();
-				fail();
-			} catch (UnsupportedOperationException ex) {
-			}
-		}
-		throw new UnsupportedOperationException();
+		level.getFullParents().clear();
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void noEditableFullParentsIncludingMeTest() {
-		for (PermissionLevel level : PermissionLevel.values()) {
-			try {
-				level.getFullParentsAndMe().clear();
-				fail();
-			} catch (UnsupportedOperationException ex) {
-			}
-		}
-		throw new UnsupportedOperationException();
+		level.getFullParentsAndMe().clear();
 	}
 
 	@Test
 	public void fullParentsIncludesAllParentsTest() {
-		for (PermissionLevel level : PermissionLevel.values()) {
-			assertTrue(level.getFullParents().containsAll(level.getParents()));
-		}
+		assertTrue(level.getFullParents().containsAll(level.getParents()));
 	}
 
 	@Test
 	public void fullParentsAndMeIncludesAllFullParentsTest() {
-		for (PermissionLevel level : PermissionLevel.values()) {
-			assertTrue(level.getFullParentsAndMe().containsAll(level.getFullParents()));
-		}
+		assertTrue(level.getFullParentsAndMe().containsAll(level.getFullParents()));
 	}
 }
