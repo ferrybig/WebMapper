@@ -43,6 +43,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.*;
 import static java.net.URLEncoder.encode;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.timeout.ReadTimeoutException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -264,6 +265,7 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 			}
 			jsonRes.put("data", new JSONObject());
 		} else {
+			@SuppressWarnings("unchecked")
 			EndpointResult<JSONObject> obj = (EndpointResult<JSONObject>) res;
 			jsonRes = new JSONObject();
 			if (res.getResult() != Result.OK) {
@@ -289,8 +291,10 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		LOGGER.log(Level.SEVERE, "Exception caught: ", cause);
-		ctx.close();
+		if (!(cause instanceof ReadTimeoutException)) {
+			LOGGER.log(Level.SEVERE, "Exception caught: ", cause);
+		}
+		ctx.channel().disconnect().addListener(f->ctx.close());
 	}
 
 	@Override
