@@ -114,6 +114,7 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 				res1.headers().set("Access-Control-Allow-Headers", "Content-Type");
 				res1.headers().set("Access-Control-Allow-Methods", "POST,GET");
 				res1.headers().set("Access-Control-Allow-Origin", "*");
+				res1.headers().set("Access-Control-Allow-Max-Age", "600");
 				sendHttpResponse(ctx, req, res1);
 			} else if (req.method() == POST || req.method() == GET || req.method() == HEAD) {
 				String url = req.uri();
