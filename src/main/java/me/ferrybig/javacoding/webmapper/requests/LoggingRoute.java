@@ -11,6 +11,7 @@ import static me.ferrybig.javacoding.webmapper.util.URLEncoder.encode;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,7 +21,7 @@ public class LoggingRoute implements RequestMapper {
 
 	private final RequestMapper upstream;
 	private final Level level;
-	private static final Logger LOGGER = Logger.getLogger(LoggingRoute.class);
+	private static final Logger LOGGER = Logger.getLogger(LoggingRoute.class.getName());
 
 	public LoggingRoute(RequestMapper upstream, Level level) {
 		this.upstream = upstream;
