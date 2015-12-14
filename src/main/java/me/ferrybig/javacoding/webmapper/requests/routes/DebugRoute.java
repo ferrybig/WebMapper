@@ -22,7 +22,7 @@ public class DebugRoute implements RequestMapper {
 		JSONObject result = new JSONObject();
 		result.put("version", VersionInfo.getFullVersion());
 		result.put("session-key", req.getSession().getKey());
-		return new EndpointResult(EndpointResult.Result.OK, result, EndpointResult.ContentType.JSON);
+		return new EndpointResult<>(EndpointResult.Result.OK, result, EndpointResult.ContentType.JSON);
 	}
 	
 }

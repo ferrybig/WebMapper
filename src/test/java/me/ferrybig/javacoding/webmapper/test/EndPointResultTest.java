@@ -25,10 +25,10 @@ public class EndPointResultTest {
 	
 	@Test
 	public void equalsTest() {
-		EndpointResult result1 = new EndpointResult(Result.OK, "Hello", EndpointResult.ContentType.TEXT);
-		EndpointResult result2 = new EndpointResult(Result.OK, "Hello", EndpointResult.ContentType.TEXT);
-		EndpointResult result3 = new EndpointResult(Result.OK, "Hello World!", EndpointResult.ContentType.TEXT);
-		EndpointResult result4 = new EndpointResult(Result.OK, "Hello World!", EndpointResult.ContentType.HTML);
+		EndpointResult result1 = new EndpointResult<>(Result.OK, "Hello", EndpointResult.ContentType.TEXT);
+		EndpointResult result2 = new EndpointResult<>(Result.OK, "Hello", EndpointResult.ContentType.TEXT);
+		EndpointResult result3 = new EndpointResult<>(Result.OK, "Hello World!", EndpointResult.ContentType.TEXT);
+		EndpointResult result4 = new EndpointResult<>(Result.OK, "Hello World!", EndpointResult.ContentType.HTML);
 		
 		assertEquals(result1, result2);
 		assertEquals(result1.hashCode(), result2.hashCode());
@@ -54,19 +54,19 @@ public class EndPointResultTest {
 	
 	@Test(expected = NullPointerException.class)
 	public void nullResultTest() {
-		new EndpointResult(null, "Hello", EndpointResult.ContentType.TEXT).toString();
+		new EndpointResult<>(null, "Hello", EndpointResult.ContentType.TEXT).toString();
 		Assert.fail();
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void nullDataTest() {
-		new EndpointResult(Result.OK, null, EndpointResult.ContentType.TEXT).toString();
+		new EndpointResult<>(Result.OK, null, EndpointResult.ContentType.TEXT).toString();
 		Assert.fail();
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void nullContentTypeTest() {
-		new EndpointResult(Result.OK, "Hello", null).toString();
+		new EndpointResult<>(Result.OK, "Hello", null).toString();
 		Assert.fail();
 	}
 	
