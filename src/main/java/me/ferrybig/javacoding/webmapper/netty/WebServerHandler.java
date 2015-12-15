@@ -106,6 +106,7 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 				WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
 			} else {
 				handshaker.handshake(ctx.channel(), req);
+				ctx.channel().pipeline().remove("readtimeout");
 				this.websocketTmp = new SimpleWebServerRequest(WEBSOCKET_PATH, ctx.channel(),
 						new LazySessionSupplier(sessions::createNewSession), server, listener);
 			}
@@ -202,7 +203,7 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 				res1.headers().set("Access-Control-Allow-Headers", "Content-Type");
 				res1.headers().set("Access-Control-Allow-Methods", "POST,GET");
 				res1.headers().set("Access-Control-Allow-Origin", "*");
-
+				res1.headers().set("Keep-Alive", "timeout=15, max=100");
 				res1.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
 
 				sendHttpResponse(ctx, req, res1);
