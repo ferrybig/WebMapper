@@ -8,9 +8,13 @@ package me.ferrybig.javacoding.webmapper.test.session;
 import me.ferrybig.javacoding.webmapper.session.PermissionLevel;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Assume;
+import static org.junit.Assume.assumeTrue;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -75,4 +79,20 @@ public class PermissionLevelTest {
 	public void fullParentsAndMeIncludesAllFullParentsTest() {
 		assertTrue(level.getFullParentsAndMe().containsAll(level.getFullParents()));
 	}
+
+	@Test
+	public void noCyclicParentChainsPresent() {
+		checkCyclicParents(level, level, EnumSet.noneOf(PermissionLevel.class));
+	}
+
+	private void checkCyclicParents(PermissionLevel current, PermissionLevel toTest, 
+			Set<PermissionLevel> visited) {
+		current.getParents().stream().forEach((p) -> {
+			assertNotEquals(toTest, p);
+			assumeTrue(visited.add(p));
+			checkCyclicParents(p, toTest, visited);
+			visited.remove(p);
+		});
+	}
+
 }
