@@ -10,6 +10,7 @@ import me.ferrybig.javacoding.webmapper.EndpointResult.ContentType;
 import me.ferrybig.javacoding.webmapper.EndpointResult.Result;
 import me.ferrybig.javacoding.webmapper.Listener;
 import me.ferrybig.javacoding.webmapper.Server;
+import me.ferrybig.javacoding.webmapper.exceptions.RouteException;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.requests.requests.SessionSupplier;
 import me.ferrybig.javacoding.webmapper.requests.requests.SimpleWebServerRequest;
@@ -148,7 +149,13 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 						decodeRequest(Optional.ofNullable(req.headers().get(CONTENT_TYPE)), req.content()).
 						map(Collections::singletonList).orElseGet(Collections::emptyList));
 
-				EndpointResult<?> res = this.httpMapper.handleHttpRequest(request);
+				EndpointResult<?> res;
+				try {
+					res = this.httpMapper.handleHttpRequest(request);
+				} catch (RouteException ex) {
+					res = new EndpointResult<>(Result.SERVER_ERROR, "Server error!", ContentType.TEXT);
+					Logger.getLogger(WebServerHandler.class.getName()).log(Level.SEVERE, null, ex);
+				}
 
 				ByteBuf content = Unpooled.wrappedBuffer(res.asBytes(DEFAULT_CHARSET));
 				HttpResponseStatus status;
@@ -250,7 +257,13 @@ public class WebServerHandler extends SimpleChannelInboundHandler<Object> {
 		
 		websocketTmp.endpoint(endpoint).setDataOrClear(json.optJSONObject("data"));
 		
-		EndpointResult<?> res = websocketMapper.handleHttpRequest(websocketTmp);
+		EndpointResult<?> res;
+				try {
+					res = this.httpMapper.handleHttpRequest(websocketTmp);
+				} catch (RouteException ex) {
+					res = new EndpointResult<>(Result.SERVER_ERROR, "Server error!", ContentType.TEXT);
+					Logger.getLogger(WebServerHandler.class.getName()).log(Level.SEVERE, null, ex);
+				}
 		JSONObject jsonRes;
 		if (res.getContentType() != ContentType.JSON) {
 			jsonRes = new JSONObject();

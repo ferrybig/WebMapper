@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper.requests;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
+import me.ferrybig.javacoding.webmapper.exceptions.RouteException;
 import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
 import me.ferrybig.javacoding.webmapper.requests.routes.NoPermissionRoute;
 import java.util.Arrays;
@@ -28,7 +29,7 @@ public class SafetyRoute implements RequestMapper {
 	}
 
 	@Override
-	public EndpointResult<?> handleHttpRequest(WebServerRequest req) {
+	public EndpointResult<?> handleHttpRequest(WebServerRequest req) throws RouteException {
 		if(req.endpoint().length() < maxUriLength && level.isSafe(req.endpoint())) {
 			return upstream.handleHttpRequest(req);
 		}

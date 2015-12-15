@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper.requests;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
+import me.ferrybig.javacoding.webmapper.exceptions.RouteException;
 import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
 import static me.ferrybig.javacoding.webmapper.util.URLEncoder.encode;
 import java.net.InetSocketAddress;
@@ -29,7 +30,7 @@ public class LoggingRoute implements RequestMapper {
 	}
 
 	@Override
-	public EndpointResult<?> handleHttpRequest(WebServerRequest req) {
+	public EndpointResult<?> handleHttpRequest(WebServerRequest req) throws RouteException {
 		String endpoint = req.endpoint();
 		EndpointResult<?> res = upstream.handleHttpRequest(req);
 		SocketAddress remote = req.getChannel().remoteAddress();

@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper.requests;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
+import me.ferrybig.javacoding.webmapper.exceptions.RouteException;
 import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
 import java.util.Map;
 import java.util.Objects;
@@ -86,7 +87,7 @@ public class SimpleRequestRouter implements RequestMapper {
 	}
 
 	@Override
-	public EndpointResult handleHttpRequest(WebServerRequest req) {
+	public EndpointResult handleHttpRequest(WebServerRequest req) throws RouteException {
 		return resolvRoute(req.endpoint()).handleHttpRequest(req);
 	}
 }

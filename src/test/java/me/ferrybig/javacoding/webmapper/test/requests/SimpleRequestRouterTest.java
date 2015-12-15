@@ -10,6 +10,7 @@ import me.ferrybig.javacoding.webmapper.test.empty.EmptyServer;
 import me.ferrybig.javacoding.webmapper.EndpointResult;
 import me.ferrybig.javacoding.webmapper.Listener;
 import me.ferrybig.javacoding.webmapper.Server;
+import me.ferrybig.javacoding.webmapper.exceptions.RouteException;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.requests.SimpleRequestRouter;
 import me.ferrybig.javacoding.webmapper.requests.requests.SessionSupplier;
@@ -41,7 +42,7 @@ public class SimpleRequestRouterTest {
 	private static final SessionSupplier emptysessionSupplier = new EmptySessionSupplier();
 
 	@Test
-	public void exactMatchTest() {
+	public void exactMatchTest() throws RouteException {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", SUCCESS);
 		WebServerRequest req = new SimpleWebServerRequest("/test", emptycontext, emptysessionSupplier, emptyServer, listener);
@@ -49,7 +50,7 @@ public class SimpleRequestRouterTest {
 	}
 
 	@Test
-	public void weakMatchTest() {
+	public void weakMatchTest() throws RouteException {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", SUCCESS);
 		WebServerRequest req = new SimpleWebServerRequest("/test/1", emptycontext, emptysessionSupplier, emptyServer, listener);
@@ -57,7 +58,7 @@ public class SimpleRequestRouterTest {
 	}
 
 	@Test
-	public void longestRouteTest() {
+	public void longestRouteTest() throws RouteException {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", FAILING);
 		mapper.addRoute("/test/1", SUCCESS);
@@ -72,7 +73,7 @@ public class SimpleRequestRouterTest {
 	}
 
 	@Test
-	public void takesDefaultRouteTest() {
+	public void takesDefaultRouteTest() throws RouteException {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(SUCCESS);
 		mapper.addRoute("/test", FAILING);
 		mapper.addRoute("/test/1", FAILING);
@@ -82,7 +83,7 @@ public class SimpleRequestRouterTest {
 	}
 
 	@Test
-	public void substringWorksTest() {
+	public void substringWorksTest() throws RouteException {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", (req) -> {
 			assertEquals(req.endpoint().length(), "".length());
@@ -93,7 +94,7 @@ public class SimpleRequestRouterTest {
 	}
 
 	@Test
-	public void substringWorksNonExactMatchTest() {
+	public void substringWorksNonExactMatchTest() throws RouteException {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", (req) -> {
 			assertEquals(req.endpoint().length(), "/ttt".length());
@@ -104,7 +105,7 @@ public class SimpleRequestRouterTest {
 	}
 
 	@Test
-	public void substringCanBeDisabledTest() {
+	public void substringCanBeDisabledTest() throws RouteException {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", (req) -> {
 			assertEquals(req.endpoint().length(), "/test".length());
@@ -115,7 +116,7 @@ public class SimpleRequestRouterTest {
 	}
 
 	@Test
-	public void substringCanBeDisabledNonExactMatchTest() {
+	public void substringCanBeDisabledNonExactMatchTest() throws RouteException {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", (req) -> {
 			assertEquals(req.endpoint().length(), "/test/ttt".length());
@@ -126,7 +127,7 @@ public class SimpleRequestRouterTest {
 	}
 	
 	@Test
-	public void substringCanBeDisabledExactRouteMatchTest() {
+	public void substringCanBeDisabledExactRouteMatchTest() throws RouteException {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", (req) -> {
 			assertEquals(req.endpoint().length(), "/test".length());
@@ -137,7 +138,7 @@ public class SimpleRequestRouterTest {
 	}
 	
 	@Test
-	public void substringCanBeEnabledExactRouteMatchTest() {
+	public void substringCanBeEnabledExactRouteMatchTest() throws RouteException {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(FAILING);
 		mapper.addRoute("/test", (req) -> {
 			assertEquals(req.endpoint().length(), "".length());
@@ -148,7 +149,7 @@ public class SimpleRequestRouterTest {
 	}
 	
 	@Test
-	public void routeCanBeRemovedTest() {
+	public void routeCanBeRemovedTest() throws RouteException {
 		SimpleRequestRouter mapper = new SimpleRequestRouter(SUCCESS);
 		mapper.addRoute("/test", FAILING);
 		mapper.removeRoute("/test");

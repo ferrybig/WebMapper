@@ -6,6 +6,7 @@
 package me.ferrybig.javacoding.webmapper.requests;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
+import me.ferrybig.javacoding.webmapper.exceptions.RouteException;
 import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
 
 /**
@@ -14,5 +15,5 @@ import me.ferrybig.javacoding.webmapper.requests.requests.WebServerRequest;
  */
 @FunctionalInterface
 public interface RequestMapper {
-	public EndpointResult<?> handleHttpRequest(WebServerRequest req);
+	public EndpointResult<?> handleHttpRequest(WebServerRequest req) throws RouteException;
 }

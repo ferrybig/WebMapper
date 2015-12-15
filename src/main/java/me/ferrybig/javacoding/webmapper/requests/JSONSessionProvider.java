@@ -7,6 +7,7 @@ package me.ferrybig.javacoding.webmapper.requests;
 
 import me.ferrybig.javacoding.webmapper.EndpointResult;
 import static me.ferrybig.javacoding.webmapper.EndpointResult.ContentType.JSON;
+import me.ferrybig.javacoding.webmapper.exceptions.RouteException;
 import me.ferrybig.javacoding.webmapper.requests.RequestMapper;
 import me.ferrybig.javacoding.webmapper.requests.requests.LazySessionSupplier;
 import me.ferrybig.javacoding.webmapper.requests.requests.StaticSessionSupplier;
@@ -32,7 +33,7 @@ public class JSONSessionProvider implements RequestMapper {
 	}
 
 	@Override
-	public EndpointResult<?> handleHttpRequest(WebServerRequest req) {
+	public EndpointResult<?> handleHttpRequest(WebServerRequest req) throws RouteException {
 		Optional<JSONObject> data = req.getDataAs(JSONObject.class);
 		LazySessionSupplier s = new LazySessionSupplier(()->
 				sessions.findOrCreateSession(Optional.ofNullable(
